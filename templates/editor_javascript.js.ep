@@ -1,0 +1,20 @@
+% content_for 'additional_javascript' => begin
+	%= javascript begin
+		if (typeof window.MapInfo === 'undefined'){
+			var MapInfo = {
+				'Layer': {}
+			};
+		}
+
+		% foreach my $layer_key (keys $layer_info){
+			% my $layer = $layer_info->{$layer_key};
+			MapInfo.Layer['<%= $layer_key %>'] = {};
+			% foreach my $tile_key (keys $layer_info->{$layer_key}->{'tile_info'}) {
+				% my $tile = $layer_info->{$layer_key}->{'tile_info'}->{$tile_key};
+				% if ($tile->{'description'} eq 'Blank') {
+					MapInfo.Layer['<%= $layer_key %>']['blank_tile_id'] = <%= $tile->{'tile_id'} %>;
+				% }
+			% }
+		%}
+	% end
+% end

@@ -1,0 +1,23 @@
+.ground{
+	background-image: url('/images/ground_layer.png');
+}
+
+.detail{
+	background-image: url('/images/details_layer.png');
+}
+
+.character{
+	background-image: url('/images/character_layer.png');
+}
+
+.overlay{
+	background-image: url('/images/overlay_layer.png');
+}
+
+.sky{
+	background-image: url('/images/sky_layer.png');
+}
+
+.lighting{
+	background-image: url('/images/lighting_layer.png');
+}

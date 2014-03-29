@@ -1,0 +1,12 @@
+% layout 'default';
+
+	<h3>Characters</h3>
+	% for (my $i = 0; $i <= scalar(@{$characters}) - 1; $i++){
+		<div class="select_character_div well">
+			<input type="hidden" class="character_id" id="<%= $characters->[$i]->{'id'} %>">
+			<img style="background-image: url('<%= $characters->[$i]->{'path'} %>'); background-position: <%= $characters->[$i]->{'offset_x'} %>px <%= $characters->[$i]->{'offset_y'} %>px; height: 32px; width: 32px;" class="img-thumbnail character_sprite">
+			<span class="character_name"><%= $characters->[$i]->{'name'} %></span>
+		</div>
+	% }
+	
+	<button type="button" class="btn btn-primary" id="play_button">Play!</button>

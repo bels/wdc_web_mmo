@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title><%= title %></title>
+		%= $self->render('style_scripts', partial => 1)
+		%= content_for 'additional_javascript'
+	</head>
+	<body>
+	<%= content %>
+	</body>
+</html>

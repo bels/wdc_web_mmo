@@ -1,0 +1,37 @@
+% layout 'editor';
+	% my $errors = $self->validator->get_errors;
+	
+	<div class="row">
+		<div class="col-sm-8" id="creature_form_div">
+			% #these would be errors straight from the database
+			% if($self->flash('error')) {
+			<div data-alert class="col-sm-12 alert alert-danger alert-dismissable">
+				<%= $self->flash('error') %>
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+			</div>
+			% }
+			% if($self->flash('success')) {
+			<div data-alert class="col-sm-12 alert alert-success alert-dismissable">
+				<%= $self->flash('success') %>
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+			</div>
+			% }
+			%= form_for spell_mapping_save => (method => 'POST', role => 'form', class => 'form-horizontal') => begin
+				%= label_for spell => 'Spell Name', class => 'control-label'
+				<select name="spell">
+				% foreach my $spell (@{$spells}){
+					<option value="<%= $spell->{'spell_entry_id'} %>"><%= $spell->{'name'} %></option>
+				%}
+				</select>
+				%= label_for creature => 'Entity Name', class => 'control-label'
+				<select name="creature">
+				% foreach my $creature (@{$creatures}){
+					<option value="<%= $creature->{'id'} %>"><%= $creature->{'name'} %></option>
+				%}
+				</select>
+				<br />
+				<br />
+				<button type="submit" class="btn btn-default">Save Spell</button>
+			% end
+		</div>
+	</div>

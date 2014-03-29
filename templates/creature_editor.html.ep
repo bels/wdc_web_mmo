@@ -1,0 +1,44 @@
+% layout 'editor';
+	% my $errors = $self->validator->get_errors;
+	
+	<div class="row">
+		<div class="col-sm-8" id="creature_form_div">
+			% #these would be errors straight from the database
+			% if($self->flash('error')) {
+			<div data-alert class="col-sm-12 alert alert-danger alert-dismissable">
+				<%= $self->flash('error') %>
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+			</div>
+			% }
+			% if($self->flash('success')) {
+			<div data-alert class="col-sm-12 alert alert-success alert-dismissable">
+				<%= $self->flash('success') %>
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+			</div>
+			% }
+			%= form_for creature_save => (method => 'POST', role => 'form', class => 'form-horizontal', id => 'creature_form') => begin
+				%= hidden_field mode => 'create', id => 'mode'
+				% if(exists($errors->{'creature_name'})) {
+					%= label_for creature_name => 'Name', class => 'control-label has-error'
+					%= text_field 'creature_name', id => 'creature_name', placeholder => $errors->{'creature_name'}, class => 'form-control has-error'
+				% } else {
+					%= label_for creature_name => 'Name', class => 'control-label'
+					%= text_field 'creature_name', id => 'creature_name', placeholder => 'Creature Name', class => 'form-control'
+				% }
+				% if(exists($errors->{'creature_description'})) {
+					%= label_for creature_description => 'Description', class => 'control-label has-error'
+					%= text_field 'creature_description', id => 'creature_description', placeholder => $errors->{'creature_description'}, class=> 'form-control has-error'
+				% } else {
+					%= label_for creature_description => 'Description', class => 'control-label'
+					%= text_field 'creature_description', id => 'creature_description', placeholder => 'A short description', class=> 'form-control'
+				% }
+				%= $self->render('stat_form', partial =>1)
+				% foreach my $sprite (@{$sprites}){
+					<div class="sprite_tile tile available_thumbnail" style="background-position: -<%= $sprite->{'offset_x'} %>px <%= $sprite->{'offset_y'} %>px; height: <%= $sprite->{'y_size'} %>px; width: <%= $sprite->{'x_size'} %>px; float:left;" sprite_id="<%= $sprite->{'id'} %>"></div>
+				% }
+				<br />
+				<br />
+				<button type="submit" class="btn btn-default">Save Creature</button>
+			% end
+		</div>
+	</div>

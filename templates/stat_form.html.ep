@@ -1,0 +1,71 @@
+				% my $errors = $self->validator->get_errors;
+				% if(exists($errors->{'hitpoints'})) {
+					%= label_for hitpoints => 'Hit Points', class => 'control-label has-error'
+					%= text_field 'hitpoints', id => 'hitpoints', placeholder => $errors->{'hitpoints'}, class=> 'form-control has-error'
+				% } else {
+					%= label_for hitpoints => 'Hit Points', class => 'control-label'
+					%= text_field 'hitpoints', id => 'hitpoints', placeholder => 'The base hit points this creature will have', class=> 'form-control'
+				% }
+				% if(exists($errors->{'manapoints'})) {
+					%= label_for manapoints => 'Mana Points', class => 'control-label has-error'
+					%= text_field 'manapoints', id => 'manapoints', placeholder => $errors->{'manapoints'}, class=> 'form-control has-error'
+				% } else {
+					%= label_for creature_manapoints => 'Mana Points', class => 'control-label'
+					%= text_field 'manapoints', id => 'manapoints', placeholder => 'The base mana points this creature will have', class=> 'form-control'
+				% }
+				% if(exists($errors->{'strength'})) {
+					%= label_for strength => 'Strength', class => 'control-label has-error'
+					%= text_field 'strength', id => 'strength', placeholder => $errors->{'strength'}, class=> 'form-control has-error'
+				% } else {
+					%= label_for strength => 'Strength', class => 'control-label'
+					%= text_field 'strength', id => 'strength', placeholder => 'Strength', class=> 'form-control'
+				% }
+				% if(exists($errors->{'agility'})) {
+					%= label_for agility => 'Agility', class => 'control-label has-error'
+					%= text_field 'agility', id => 'agility', placeholder => $errors->{'agility'}, class=> 'form-control has-error'
+				% } else {
+					%= label_for agility => 'Agility', class => 'control-label'
+					%= text_field 'agility', id => 'agility', placeholder => 'Agility', class=> 'form-control'
+				% }
+				% if(exists($errors->{'dexterity'})) {
+					%= label_for dexterity => 'Dexterity', class => 'control-label has-error'
+					%= text_field 'dexterity', id => 'dexterity', placeholder => $errors->{'dexterity'}, class=> 'form-control has-error'
+				% } else {
+					%= label_for creature_dexterity => 'Dexterity', class => 'control-label'
+					%= text_field 'dexterity', id => 'dexterity', placeholder => 'Dexterity', class=> 'form-control'
+				% }
+				% if(exists($errors->{'stamina'})) {
+					%= label_for stamina => 'Stamina', class => 'control-label has-error'
+					%= text_field 'stamina', id => 'stamina', placeholder => $errors->{'stamina'}, class=> 'form-control has-error'
+				% } else {
+					%= label_for stamina => 'Stamina', class => 'control-label'
+					%= text_field 'stamina', id => 'stamina', placeholder => 'Stamina', class=> 'form-control'
+				% }
+				% if(exists($errors->{'intelligence'})) {
+					%= label_for intelligence => 'Intelligence', class => 'control-label has-error'
+					%= text_field 'intelligence', id => 'intelligence', placeholder => $errors->{'intelligence'}, class=> 'form-control has-error'
+				% } else {
+					%= label_for intelligence => 'Intelligence', class => 'control-label'
+					%= text_field 'intelligence', id => 'intelligence', placeholder => 'Intelligence', class=> 'form-control'
+				% }
+				% if(exists($errors->{'wisdom'})) {
+					%= label_for wisdom => 'Wisdom', class => 'control-label has-error'
+					%= text_field 'wisdom', id => 'creature_wisdom', placeholder => $errors->{'wisdom'}, class=> 'form-control has-error'
+				% } else {
+					%= label_for wisdom => 'Wisdom', class => 'control-label'
+					%= text_field 'wisdom', id => 'wisdom', placeholder => 'Wisdom', class=> 'form-control'
+				% }
+				% if(exists($errors->{'vitality'})) {
+					%= label_for vitality => 'Vitality', class => 'control-label has-error'
+					%= text_field 'vitality', id => 'vitality', placeholder => $errors->{'vitality'}, class=> 'form-control has-error'
+				% } else {
+					%= label_for vitality => 'Vitality', class => 'control-label'
+					%= text_field 'vitality', id => 'vitality', placeholder => 'Vitality', class=> 'form-control'
+				% }
+				% if(exists($errors->{'luck'})) {
+					%= label_for luck => 'Luck', class => 'control-label has-error'
+					%= text_field 'luck', id => 'luck', placeholder => $errors->{'luck'}, class=> 'form-control has-error'
+				% } else {
+					%= label_for luck => 'Luck', class => 'control-label'
+					%= text_field 'luck', id => 'luck', placeholder => 'Luck', class=> 'form-control'
+				% }

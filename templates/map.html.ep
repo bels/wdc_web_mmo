@@ -1,0 +1,36 @@
+% layout 'default';
+%= $self->render('game_javascript', partial => 1)
+	<div id="map">
+	% foreach my $layer_key (keys %{$layer_info}) {
+		<div id="<%= lc($layer_info->{$layer_key }->{'name'}) %>" class="layer<%= $layer_key %> layer" style="max-width: <%= $map_meta_data->{'x_size'} %>px; width: <%= $map_meta_data->{'x_size'} %>px; height: <%= $map_meta_data->{'y_size'} %>px;">
+		
+			% for(my $i = 0; $i <= scalar(@{$map_data->{$layer_key}->{'tile_ids'}}) - 1; $i++){
+				% my $tile_id = $map_data->{$layer_key}->{'tile_ids'}->[$i];
+				% my $tile = $layer_info->{$layer_key}->{'tile_info'}->{$tile_id};
+			<div class="<%= lc($layer_info->{$layer_key }->{'name'}) %>" style="background-position: -<%= $tile->{'offset_x'} %>px <%= $tile->{'offset_y'} %>px; height: <%= $tile->{'y_size'} %>px; width: <%= $tile->{'x_size'} %>px; float:left;"></div>
+			% }
+		</div>
+		% }
+	
+		<div class="players layer" style="max-width: <%= $map_meta_data->{'x_size'} %>px; width: <%= $map_meta_data->{'x_size'} %>px; height: <%= $map_meta_data->{'y_size'} %>px;">
+			% for(my $i = 0; $i <= scalar(@{$characters}) - 1; $i++){
+				<div class="entity player_image <% if( session('character_id') == $characters->[$i]->{'id'} ){ %>player<% } %>" pid="<%= $characters->[$i]->{'id'} %>" style="background-image: url('<%= $characters->[$i]->{'sprite_path'} %>'); background-position: -<%= $characters->[$i]->{'offset_x'} %>px <%= $characters->[$i]->{'offset_y'} %>px; left: <%= ($characters->[$i]->{'x'} - 1) * 32 %>px; top: <%= ($characters->[$i]->{'y'} - 1) * 32 %>px;" ></div>
+			% }
+		</div>
+		<div class="npcs layer" style="max-width: <%= $map_meta_data->{'x_size'} %>px; width: <%= $map_meta_data->{'x_size'} %>px; height: <%= $map_meta_data->{'y_size'} %>px;">
+			% for(my $i = 0; $i <= scalar(@{$npcs}) - 1; $i++){
+				<div class="entity" npc_id="<%= $npcs->[$i]->{'id'} %>" style="left: <%= ($npcs->[$i]->{'x'} - 1) * 32 %>px; top: <%= ($npcs->[$i]->{'y'} - 1) * 32 %>px; background-image: url('<%= $npcs->[$i]->{'sprite_path'} %>'); background-position: -<%= $npcs->[$i]->{'offset_x'} %>px <%= $npcs->[$i]->{'offset_y'} %>px;" ></div>
+			% }
+		</div>
+		<div class="creatures layer" style="max-width: <%= $map_meta_data->{'x_size'} %>px; width: <%= $map_meta_data->{'x_size'} %>px; height: <%= $map_meta_data->{'y_size'} %>px;">
+			% for(my $i = 0; $i <= scalar(@{$creatures}) - 1; $i++){
+				<div class="entity" creature_id="<%= $creatures->[$i]->{'id'} %>" style="left: <%= ($creatures->[$i]->{'x'} - 1) * 32 %>px; top: <%= ($creatures->[$i]->{'y'} - 1) * 32 %>px; background-image: url('<%= $creatures->[$i]->{'sprite_path'} %>'); background-position: -<%= $creatures->[$i]->{'offset_x'} %>px <%= $creatures->[$i]->{'offset_y'} %>px;" ></div>
+			% }
+		</div>
+	</div>
+	<div id="collision_data" style="display: none">
+		% foreach my $tile (keys %{$collision_data}){
+			<span class="collision_tile"><%= $tile %></span>
+		% }
+	</div>
+	

@@ -1,0 +1,30 @@
+.tile_spot{
+	float: left;
+	border: 1px solid black;
+	height: 32px;
+	width: 32px;
+}
+
+.layer{
+	height: 1064px;
+	width: 1064px;
+	overflow: auto;
+}
+
+.layer_tiles{
+	overflow: auto;
+}
+
+#current_tile{
+	width: 32px;
+	height: 32px;
+}
+
+.sprite_tile{
+	background-image: url('/images/sprites.png');
+}
+
+.tile{
+	float: left;
+}
+

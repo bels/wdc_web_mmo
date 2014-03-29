@@ -1,0 +1,75 @@
+% content_for 'additional_javascript' => begin
+	%= javascript begin
+	
+		//websocket
+		var ws = new WebSocket('ws://localhost:3000/dispatch');
+		
+		if(typeof window.UI === 'undefined'){
+			var UI = {
+				refresh: function(data){
+				
+				},
+				move_x: function(data){
+				
+				},
+				move_y: function(data){
+				
+				}
+			}
+		}
+		if(typeof window.Entity === 'undefined'){
+			var Entity = {
+				id: 0,
+				hp: 0,
+				mana: 0,
+				x: 1,
+				y: 1,
+				alive: 1,
+				sprite: {
+					x: 0,
+					y: 0
+				},
+				move_x: function(data){
+				
+				},
+				move_y: function(data){
+				
+				},
+				take_damage: function(data){
+				
+				},
+				heal: function(data){
+				
+				}
+			}
+		}
+		
+		if(typeof window.Player === 'undefined'){
+			var Player = Object.create(Entity);
+			Player = {
+				items: {},
+				
+			}
+		}
+		
+		if(typeof window.NPC === 'undefined'){
+			var NPC = Object.create(Entity);
+		}
+		
+		if(typeof window.MOB === 'undefined'){
+			var MOB = Object.create(Entity);
+		}
+		
+		% foreach my $player (%{$players}){
+			window[player<%= $player->{'id'} %>] = Object.create(Player);
+		% }
+		
+		% foreach my $npc (%{$npcs}){
+			window[npc<%= $npc->{'id'} %>] = Object.create(NPC);
+		% }
+		
+		% foreach my $mob (%{$mobs}){
+			window[mob<%= $mob->{'id'} %>] = Object.create(MOB);
+		% }
+	% end
+% end

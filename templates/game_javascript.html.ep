@@ -1,0 +1,336 @@
+% content_for 'additional_javascript' => begin
+<script type="text/javascript">
+	$(document).ready(function(){
+		//websocket
+		ws = new WebSocket('ws://localhost:3000/dispatch');
+		ws.onopen = function(){
+			//initialization
+			var init_data = {
+				"action": "init",
+				"data": {
+					"pid": <%= session('character_id') %>
+				}
+			};
+			ws.send(JSON.stringify(init_data));
+		}
+
+		ws.onerror = function(error){
+			console.log('Error detected: ' + error);
+		}
+		
+		ws.onmessage = function(e){
+			var server_message = e.data;
+			console.log(server_message);
+		}
+
+		Dispatcher = {
+			'Entities': [],
+			register: function(data){
+				this.Entities.push(data);
+			},
+			execute_abilities: function(data){
+				//this function will loop through all registered entities and check for abilities/actions that should affect the current entity
+				for(var i=0; i < Dispatcher.Entities.length; i++){
+					for(var counter = 0; counter < window[Dispatcher.Entities[i].abilities.length; counter++){
+						var distance = 10; //this needs to be some calculation that determines the distance between two objects in an x/y grid
+
+						if(window[Dispatcher.Entities[i].abilities[counter].range > distance){
+							var info = {
+								'distance': distance,
+								'target': '',
+								'attacker': '',
+								'direction': '',
+								'animation_offset_x': Dispatcher.Entities[i].abilities[counter].animation_offset_x,
+								'animation_offset_y': Dispatcher.Entities[i].abilities[counter].animation_offset_y,
+								'spell_entry': Dispatcher.Entities[i].abilities[counter].spell_entry_id
+							}
+							UI.animateAction(info);
+						}
+				}
+			}
+		};
+		
+		UI = {
+			refresh: function(data){
+			
+			},
+			move: function(data){//jqO = jquery Object
+				var jqO = data.Entity.get_dom();
+				if(!UI.collision(data)){
+					if(data.direction === 'right' || data.direction === 'left'){
+						jqO.animate({
+							left: data.distance
+						}, 500, function(){
+							data.Entity.set_offset(jqO.offset());
+							if(data.direction === 'right'){
+								data.Entity.set_x(data.Entity.get_x() + 1);
+								data.Entity.increment_tile(1);
+							} else {
+								data.Entity.set_x(data.Entity.get_x() - 1);
+								data.Entity.increment_tile(-1);
+							}
+						});
+					}
+					if(data.direction === 'up' || data.direction === 'down'){
+						jqO.animate({
+							top: data.distance
+						}, 500, function(){
+							data.Entity.set_offset(jqO.offset());
+							if(data.direction === 'up'){
+								data.Entity.set_y(data.Entity.get_y() - 1);
+								data.Entity.increment_tile(-tiles_x);
+							} else {
+								data.Entity.set_y(data.Entity.get_y() + 1);
+								data.Entity.increment_tile(tiles_x);
+							}
+						});
+					}
+					ws.send(JSON.stringify({'data': data, 'action': 'move'}));
+				}
+			},
+			collision: function(data){
+				if(data.direction === 'up'){
+					if(!collision_data[data.Entity.get_current_tile() - tiles_x] && data.Entity.get_offset_y() - 1 > map_offset.top){
+						return false;
+					} else {
+						return true;
+					}
+				}
+				if(data.direction === 'down'){
+					if(!collision_data[data.Entity.get_current_tile() + tiles_x] && (data.Entity.get_offset_y() + tile_size_y) + 1 < map_offset.top + (tiles_y * tile_size_y)){
+						return false;
+					} else {
+						return true;
+					}
+				}
+				if(data.direction === 'left'){
+					if(!collision_data[data.Entity.get_current_tile() - 1] && (data.Entity.get_offset_x() - 1) > map_offset.left){
+						return false;
+					} else {
+						return true;
+					}
+				}
+				if(data.direction === 'right'){
+					if(!collision_data[data.Entity.get_current_tile() + 1] && (data.Entity.get_offset_x() + tile_size_x) + 1 < map_offset.left + (tiles_x * tile_size_x)){
+						return false;
+					} else {
+						return true;
+					}
+				}
+			},
+			animateAction: function(data){
+				var origin = {
+					'top': 0,
+					'left': 0
+				};
+				var target_offset = data.target.offset;
+				var attacker_offset = data.attacker.offset;
+				if(data.direction == 'west' || data.direction == 'northwest' || data.direction == 'southwest'){
+					$('#map').append('<div class="animation" id="' + data.spell_entry_id + '" style="background-position: ' + data.animation_offset_x + 'px ' + animation_offset_y + 'px; top: ' + attack_offset.top + 'px; left: ' + attacker_offset.left - 32 + 'px;"></div>')
+				}
+				if(data.direction == 'east' || data.direction == 'northeast' || data.direction == 'southeast'){
+					$('#map').append('<div class="animation" id="' + data.spell_entry_id + '" style="background-position: ' + data.animation_offset_x + 'px ' + animation_offset_y + 'px; top: ' + attack_offset.top + 'px; left: ' + (+attacker_offset.left + 32) + 'px;"></div>')
+				}
+				if(data.direction == 'north'){
+					$('#map').append('<div class="animation" id="' + data.spell_entry_id + '" style="background-position: ' + data.animation_offset_x + 'px ' + animation_offset_y + 'px; top: ' + (+attack_offset.top + 32) + 'px; left: ' + attacker_offset.left + 'px;"></div>')
+				}
+				if(data.direction == 'north'){
+					$('#map').append('<div class="animation" id="' + data.spell_entry_id + '" style="background-position: ' + data.animation_offset_x + 'px ' + animation_offset_y + 'px; top: ' + attack_offset.top - 32 + 'px; left: ' + attacker_offset.left + 'px;"></div>')
+				}
+				
+				var animation_offest = $('#' + data.spell_entry_id).offset;
+				while(animation_offest.left != target_offeset.left && animation_offest.top != target_offeset.top){
+					if(data.direction == 'west')
+						animation_offset.left--;
+					}
+					if(data.direction == 'northwest'){
+						animation_offset.top--;
+						animation_offset.left--;
+					}
+					if(data.direction == 'southwest'){
+						animation_offset.top++;
+						animation_offset.left--;
+					}
+					if(data.direction == 'north')
+						animation_offset.top++;
+					}
+					if(data.direction == 'south')
+						animation_offset.top--;
+					}
+					if(data.direction == 'east')
+						animation_offset.left++;
+					}
+					if(data.direction == 'northeast'){
+						animation_offset.top--;
+						animation_offset.left++;
+					}
+					if(data.direction == 'southeast'){
+						animation_offset.top++;
+						animation_offset.left++;
+					}
+					$('#' + data.spell_entry_id).offset({top: animation_offest.top, left: animation_offset.left});
+				}
+			}
+		};
+
+		function Entity() {
+			this.id = 0;
+			this.hp = 0;
+			this.mana = 0;
+			this.x = 1;
+			this.y = 1;
+			this.offset = null;
+			this.alive = 1;
+			this.sprite = {
+				x: 0,
+				y: 0
+			};
+			this.current_tile = 1;
+			this.current_map = 1;
+			this.domElement = null;
+			this.name = '';
+			this.abilities = [];
+		};
+		Entity.prototype = {
+			move_x: function(data){
+
+			},
+			move_y: function(data){
+			
+			},
+			adjustStatus: function(data){
+			
+			},
+			adjustStats: function(data){
+			
+			},
+			set_offset: function(data){
+				if(typeof data === 'undefined' || data === null){
+					this.offset = this.domElement.offset();
+				} else {
+					this.offset = data;
+				}
+			},
+			set_x: function(data){
+				this.x = data;
+			},
+			set_y: function(data){
+				this.y = data;
+			},
+			get_offset_x: function(data){
+				return this.offset.left;
+			},
+			get_offset_y: function(data){
+				return this.offset.top;
+			},
+			get_x: function(data){
+				return this.x;
+			},
+			get_y: function(data){
+				return this.y;
+			},
+			get_dom: function(){
+				return this.domElement;
+			},
+			increment_tile: function(data){
+				this.current_tile += data;
+			},
+			get_current_tile: function(data){
+				return this.current_tile;
+			},
+			set_id: function(data){
+				this.id = data;
+			},
+			set_map: function(data){
+				this.current_map = data;
+			},
+			get_map: function(){
+				return this.current_map;
+			},
+			set_current_tile: function(data){
+				this.current_tile = data;
+			},
+			get_name: function(data){
+				return this.name;
+			},
+			set_name: function(data){
+				this.name = data;
+			},
+			register_ability: function(data){
+				//data should be an object that includes information about the ability like range, damage, name, etc...
+				this.abilities.push(data);
+			}
+		};
+
+		function Character(o,name){
+			this.items = {};
+			this.domElement = o;
+			this.set_name(name);
+			window.Dispatcher.register(this.name);
+		}
+		
+		Character.prototype = new Entity();
+		Character.prototype.constructor = Character;
+		
+		% foreach my $character (@{$characters}){
+			% if(session('character_id') == $character->{'id'}){
+				player = new Character($('.player'),'player');
+				player.set_id(<%= session('character_id') %>);
+				player.set_map(<%= stash('map_id') %>);
+				player.set_x(<%= $character->{'x'} %>);
+				player.set_y(<%= $character->{'y'} %>);
+				player.set_offset();
+				player.set_current_tile(<%= $character->{'tile_id'} %>);
+				
+				% foreach my $ability (@{$spells->{$character->{'uuid'}}->{'abilities'}}){
+				player.register_ability(<%= $ability %>);
+				% }
+			% } else {
+				character<%= $character->{'id'} %> = new Character($('.entity,pid=<%= $character->{'id'} %>'),'character<%= $character->{'id'} %>' );
+				character<%= $character->{'id'} %>.set_id(<%= $character->{'id'} %>);
+				character<%= $character->{'id'} %>.set_x(<%= $character->{'x'} %>);
+				character<%= $character->{'id'} %>.set_y(<%= $character->{'y'} %>);
+				character<%= $character->{'id'} %>.set_offset();
+				character<%= $character->{'id'} %>.set_current_tile(<%= $character->{'tile_id'} %>);
+				% foreach my $ability (@{$spells->{$character->{'uuid'}}->{'abilities'}}){
+				character<%= $character->{'id'} %>.register_ability(<%= $ability %>);
+				% }
+			% }
+		% }
+		
+		function NPC(o,name){
+			this.domElement = o;
+			this.set_name(name);
+			window.Dispatcher.register(this.name);
+		}
+		
+		NPC.prototype = new Entity;
+		NPC.prototype.constructor = NPC;
+		
+		function CREATURE(o,name){
+			this.domElement = o;
+			this.set_name(name);
+			window.Dispatcher.register(this.name);
+		}
+		
+		CREATURE.prototype = new Entity;
+		CREATURE.prototype.constructor = CREATURE;
+
+		
+		% foreach my $npc (@{$npcs}){
+		
+			npc<%= $npc->{'id'} %> = new NPC($("div[npc_id='<%= $npc->{'id'} %>']"),'npc<%= $npc->{'id'} %>');
+			% foreach my $ability (@{$spells->{$npc->{'uuid'}}->{'abilities'}}){
+			npc<%= $npc->{'id'} %>.register_ability(<%= $ability %>);
+			% }
+		% }
+		
+		% foreach my $creature (@{$creatures}){
+			creature<%= $creature->{'id'} %> = new CREATURE($("div[creature_id='<%= $creature->{'id'} %>']"),'creature<%= $creature->{'id'} %>');
+			% foreach my $ability (@{$spells->{$creature->{'uuid'}}->{'abilities'}}){
+			creature<%= $creature->{'id'} %>.register_ability(<%= $ability %>);
+			% }
+		% }
+	});
+</script>
+% end

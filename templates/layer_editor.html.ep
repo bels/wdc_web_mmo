@@ -1,0 +1,153 @@
+% layout 'editor';
+	
+	% content_for 'additional_javascript' => begin
+	%= javascript begin
+		if (typeof window.MapInfo === 'undefined'){
+			var MapInfo = {
+				'Layer': {}
+			};
+		}
+
+		% foreach my $layer_key (keys %{$layer_info}){
+			% my $layer = $layer_info->{$layer_key};
+			MapInfo.Layer['<%= $layer_key %>'] = {};
+			% foreach my $tile_key (keys %{$layer_info->{$layer_key}->{'tile_info'}}) {
+				% my $tile = $layer_info->{$layer_key}->{'tile_info'}->{$tile_key};
+				% if ($tile->{'description'} eq 'Blank') {
+					MapInfo.Layer['<%= $layer_key %>']['blank_tile_id'] = '<%= $tile->{'tile_id'} %>';
+				% }
+			% }
+		%}
+	% end
+% end
+	<div class="row">
+		% if($self->flash('error')) {
+		<div data-alert class="col-sm-12 alert alert-danger alert-dismissable">
+			<%= $self->flash('error') %>
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		</div>
+		% }
+		% if($self->flash('success')) {
+		<div data-alert class="col-sm-12 alert alert-success alert-dismissable">
+			<%= $self->flash('success') %>
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+		</div>
+		% }
+		<div class="col-sm-12" id="layer_pane">
+			<ul class="nav nav-tabs" id="left_tabs">
+				<li id="ground" class="active"><a href="#layer1" data-toggle="tab">Ground</a></li>
+				<li id="detail"><a href="#layer2" data-toggle="tab">Detail</a></li>
+				<li id="character"><a href="#layer3" data-toggle="tab">Character</a></li>
+				<li id="overlay"><a href="#layer4" data-toggle="tab">Overlay</a></li>
+				<li id="sky"><a href="#layer5" data-toggle="tab">Sky</a></li>
+				<li id="lighting"><a href="#layer6" data-toggle="tab">Lighting</a></li>
+				<li class="pull-right"><a href="#" id="layer_toggle" data-toggle="tab">Show Layers/Tiles</a></li>
+			</ul>
+			<div class="row">
+				<div class="row"><div class="col-sm-12">&nbsp;</div></div>
+				<div class="tab-content">
+					<div id="current_tile_div" style="float: right; margin-left: 15px">
+						<h5>Current Tile</h5>
+						<img src="" id="current_tile" class="img-thumbnail">
+					</div>
+					<form class="form-inline" role="form" style="float: right">
+						<div class="form-group">
+						%= text_field 'layer_name', id => 'layer_name', placeholder => 'Name', class => 'form-control layer_name col-sm-3'
+						</div>
+						<button type="button" class="btn btn-primary save_layer_btn">Save</button>
+					</form>
+					<form class="form-inline" role="form">
+						<div class="form-group">
+							%= label_for x_width => 'X Axis Width', class => 'control-label'
+							%= text_field 'x_width', id => 'x_width', placeholder => '32', class => 'form-control'
+						</div>
+						<div class="form-group">
+							%= label_for y_height => 'Y Axis Height', class => 'control-label'
+							%= text_field 'y_height', id => 'y_height', placeholder => '32', class => 'form-control'
+						</div>
+						<button id="resize" type="button" class="btn btn-default">Resize</button>
+					</form>
+					<div class="row"><div class="col-sm-12">&nbsp;</div></div>
+					<div id="layer1" class="tab-pane active">
+						<div class="well layer">
+							% for(my $i = 0; $i <= 31; $i++){
+								% for(my $j = 0; $j <= 31; $j++){
+							<div class="layer1 tile_spot"></div>
+								% }
+							% }
+						</div>
+					</div>
+					<div id="layer2" class="tab-pane">
+						<div class="well layer">
+							% for(my $i = 0; $i <= 31; $i++){
+								% for(my $j = 0; $j <= 31; $j++){
+							<div class="layer2 tile_spot"></div>
+								% }
+							% }
+						</div>
+					</div>
+					<div id="layer3" class="tab-pane">
+						<div class="well layer">
+							% for(my $i = 0; $i <= 31; $i++){
+								% for(my $j = 0; $j <= 31; $j++){
+							<div class="layer3 tile_spot"></div>
+								% }
+							% }
+						</div>
+					</div>
+					<div id="layer4" class="tab-pane">
+						<div class="well layer">
+							% for(my $i = 0; $i <= 31; $i++){
+								% for(my $j = 0; $j <= 31; $j++){
+							<div class="layer4 tile_spot"></div>
+								% }
+							% }
+						</div>
+					</div>
+					<div id="layer5" class="tab-pane">
+						<div class="well layer">
+							% for(my $i = 0; $i <= 31; $i++){
+								% for(my $j = 0; $j <= 31; $j++){
+							<div class="layer5 tile_spot"></div>
+								% }
+							% }
+						</div>
+					</div>
+					<div id="layer6" class="tab-pane">
+						<div class="well layer">
+							% for(my $i = 0; $i <= 31; $i++){
+								% for(my $j = 0; $j <= 31; $j++){
+							<div class="layer6 tile_spot"></div>
+								% }
+							% }
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-4 hidden" id="layer_tiles_pane">
+			<ul class="nav nav-tabs">
+				<li class="active"><a href="#available_layers" data-toggle="tab">Layers</a></li>
+				<li><a href="#tiles" data-toggle="tab">Tiles</a></li>
+			</ul>
+			<a href="#" id="close_layers">Close</a>
+			<div class="tab-content">
+				<div id="available_layers" class="tab-pane active">
+					<div class="well">
+						
+					</div>
+				</div>
+				<div id="tiles" class="tab-pane">
+					% foreach my $layer_key (keys %{$layer_info}){
+					<div class="well layer_tiles layer<%= $layer_key %>_tiles" <% if ($layer_key != 1) { %> style="display: none" <% } %> >
+						<h3>Layer <%= $layer_key %> Tiles</h3>
+						% foreach my $tile_key (keys %{$layer_info->{$layer_key}->{'tile_info'}}) {
+							% my $tile = $layer_info->{$layer_key}->{'tile_info'}->{$tile_key};
+						<div id="<%= $tile->{'tile_id'} %>" class="tile <%= lc($tile->{'layer_name'}) %> available_thumbnail" style="background-position: -<%= $tile->{'offset_x'} %>px <%= $tile->{'offset_y'} %>px; height: <%= $tile->{'y_size'} %>px; width: <%= $tile->{'x_size'} %>px; float:left;"></div>
+						% }
+					</div>
+					% }
+				</div>
+			</div>
+		</div>
+	</div>

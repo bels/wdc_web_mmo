@@ -1,0 +1,53 @@
+#map{
+	position: relative;
+	z-index: 7;
+}
+
+.layer{
+	position: absolute;
+}
+
+.tile{
+	float: left;
+}
+
+.layer1{
+	z-index: 0;
+}
+
+.layer2{
+	z-index: 1;
+}
+
+.layer3{
+	z-index: 2;
+}
+
+.layer4{
+	z-index: 3;
+}
+
+.layer5{
+	z-index: 4;
+}
+
+.layer6{
+	z-index: 5;
+}
+
+.entity{
+	position: absolute;
+	z-index: 2;
+	height: 32px;
+	width: 32px;
+}
+
+.sprite_tile{
+	background-image: url('/images/sprites.png');
+}
+
+.animation{
+	z-index: 2;
+	background-image: url('/images/animations.png');
+	position: absolute;
+}
