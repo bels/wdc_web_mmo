@@ -34,7 +34,7 @@ sub startup {
 	my $r = $self->routes;
 
 	my $entrance = $r->bridge('/')->to('entrance#metadata');
-	$r->websocket('/dispatch')->to('websockets#d')->name('d');
+	$r->websocket('/dispatch')->to('websockets#dispatch')->name('dispatch');
 	$entrance->route('/play_game')->to('game#play_game')->name('play_game');
 	$entrance->route('/select_character')->to('game#select_character');
 	my $editor = $entrance->bridge('/editor')->to('editor#editor');

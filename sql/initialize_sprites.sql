@@ -25,5 +25,13 @@ select * from add_sprite_data(
 	32
 );
 
+select * from add_sprite_data(
+	'Player Avatar',
+	'/images/avatar1.png',
+	'0',
+	'0',
+	32,
+	32,
+);
 
 select * from add_animation(0,0,'Fireball');

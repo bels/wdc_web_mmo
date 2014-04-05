@@ -14,7 +14,7 @@
 	
 		<div class="players layer" style="max-width: <%= $map_meta_data->{'x_size'} %>px; width: <%= $map_meta_data->{'x_size'} %>px; height: <%= $map_meta_data->{'y_size'} %>px;">
 			% for(my $i = 0; $i <= scalar(@{$characters}) - 1; $i++){
-				<div class="entity player_image <% if( session('character_id') == $characters->[$i]->{'id'} ){ %>player<% } %>" pid="<%= $characters->[$i]->{'id'} %>" style="background-image: url('<%= $characters->[$i]->{'sprite_path'} %>'); background-position: -<%= $characters->[$i]->{'offset_x'} %>px <%= $characters->[$i]->{'offset_y'} %>px; left: <%= ($characters->[$i]->{'x'} - 1) * 32 %>px; top: <%= ($characters->[$i]->{'y'} - 1) * 32 %>px;" ></div>
+				<div class="entity player_image <% if( session('character_id') eq $characters->[$i]->{'id'} ){ %>player<% } %>" pid="<%= $characters->[$i]->{'id'} %>" style="background-image: url('<%= $characters->[$i]->{'sprite_path'} %>'); background-position: -<%= $characters->[$i]->{'offset_x'} %>px <%= $characters->[$i]->{'offset_y'} %>px; left: <%= ($characters->[$i]->{'x'} - 1) * 32 %>px; top: <%= ($characters->[$i]->{'y'} - 1) * 32 %>px;" ></div>
 			% }
 		</div>
 		<div class="npcs layer" style="max-width: <%= $map_meta_data->{'x_size'} %>px; width: <%= $map_meta_data->{'x_size'} %>px; height: <%= $map_meta_data->{'y_size'} %>px;">
@@ -33,4 +33,3 @@
 			<span class="collision_tile"><%= $tile %></span>
 		% }
 	</div>
-	

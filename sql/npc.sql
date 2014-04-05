@@ -44,8 +44,8 @@ BEGIN
 		SELECT npc_location.id FROM npc_template JOIN npc_location ON npc_template.id = npc_location.npc_id WHERE "mid" = mid_val
 	LOOP
 		SELECT j,
-		(SELECT x FROM npc_location WHERE npc_id = j AND "mid" = mid_val),
-		(SELECT y FROM npc_location WHERE npc_id = j AND "mid" = mid_val), 
+		(SELECT x FROM npc_location WHERE id = j AND "mid" = mid_val),
+		(SELECT y FROM npc_location WHERE id = j AND "mid" = mid_val), 
 		(SELECT "path" FROM sprites WHERE id = (SELECT sprite_id FROM npc_template WHERE id = (SELECT npc_id FROM npc_location WHERE npc_location.id = j))),
 		(SELECT offset_x FROM sprites WHERE id = (SELECT sprite_id FROM npc_template WHERE id = (SELECT npc_id FROM npc_location WHERE npc_location.id = j))),
 		(SELECT offset_y FROM sprites WHERE id = (SELECT sprite_id FROM npc_template WHERE id = (SELECT npc_id FROM npc_location WHERE npc_location.id = j))),

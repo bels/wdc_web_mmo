@@ -8,7 +8,7 @@
 			var init_data = {
 				"action": "init",
 				"data": {
-					"pid": <%= session('character_id') %>
+					"pid": "<%= session('character_id') %>"
 				}
 			};
 			ws.send(JSON.stringify(init_data));
@@ -31,10 +31,10 @@
 			execute_abilities: function(data){
 				//this function will loop through all registered entities and check for abilities/actions that should affect the current entity
 				for(var i=0; i < Dispatcher.Entities.length; i++){
-					for(var counter = 0; counter < window[Dispatcher.Entities[i].abilities.length; counter++){
+					for(var counter = 0; counter < Dispatcher.Entities[i].abilities.length; counter++){
 						var distance = 10; //this needs to be some calculation that determines the distance between two objects in an x/y grid
 
-						if(window[Dispatcher.Entities[i].abilities[counter].range > distance){
+						if(Dispatcher.Entities[i].abilities[counter].range > distance){
 							var info = {
 								'distance': distance,
 								'target': '',
@@ -46,6 +46,7 @@
 							}
 							UI.animateAction(info);
 						}
+					}
 				}
 			}
 		};
@@ -140,7 +141,7 @@
 				
 				var animation_offest = $('#' + data.spell_entry_id).offset;
 				while(animation_offest.left != target_offeset.left && animation_offest.top != target_offeset.top){
-					if(data.direction == 'west')
+					if(data.direction == 'west'){
 						animation_offset.left--;
 					}
 					if(data.direction == 'northwest'){
@@ -151,13 +152,13 @@
 						animation_offset.top++;
 						animation_offset.left--;
 					}
-					if(data.direction == 'north')
+					if(data.direction == 'north'){
 						animation_offset.top++;
 					}
-					if(data.direction == 'south')
+					if(data.direction == 'south'){
 						animation_offset.top--;
 					}
-					if(data.direction == 'east')
+					if(data.direction == 'east'){
 						animation_offset.left++;
 					}
 					if(data.direction == 'northeast'){
@@ -273,26 +274,26 @@
 		Character.prototype.constructor = Character;
 		
 		% foreach my $character (@{$characters}){
-			% if(session('character_id') == $character->{'id'}){
+			% if(session('character_id') eq $character->{'id'}){
 				player = new Character($('.player'),'player');
-				player.set_id(<%= session('character_id') %>);
-				player.set_map(<%= stash('map_id') %>);
+				player.set_id('<%= session('character_id') %>');
+				player.set_map('<%= stash('map_id') %>');
 				player.set_x(<%= $character->{'x'} %>);
 				player.set_y(<%= $character->{'y'} %>);
 				player.set_offset();
 				player.set_current_tile(<%= $character->{'tile_id'} %>);
 				
-				% foreach my $ability (@{$spells->{$character->{'uuid'}}->{'abilities'}}){
+				% foreach my $ability (@{$spells->{$character->{'id'}}->{'abilities'}}){
 				player.register_ability(<%= $ability %>);
 				% }
 			% } else {
 				character<%= $character->{'id'} %> = new Character($('.entity,pid=<%= $character->{'id'} %>'),'character<%= $character->{'id'} %>' );
-				character<%= $character->{'id'} %>.set_id(<%= $character->{'id'} %>);
+				character<%= $character->{'id'} %>.set_id('<%= $character->{'id'} %>');
 				character<%= $character->{'id'} %>.set_x(<%= $character->{'x'} %>);
 				character<%= $character->{'id'} %>.set_y(<%= $character->{'y'} %>);
 				character<%= $character->{'id'} %>.set_offset();
 				character<%= $character->{'id'} %>.set_current_tile(<%= $character->{'tile_id'} %>);
-				% foreach my $ability (@{$spells->{$character->{'uuid'}}->{'abilities'}}){
+				% foreach my $ability (@{$spells->{$character->{'id'}}->{'abilities'}}){
 				character<%= $character->{'id'} %>.register_ability(<%= $ability %>);
 				% }
 			% }
@@ -316,19 +317,21 @@
 		CREATURE.prototype = new Entity;
 		CREATURE.prototype.constructor = CREATURE;
 
-		
+		% my $i = 1;
 		% foreach my $npc (@{$npcs}){
 		
-			npc<%= $npc->{'id'} %> = new NPC($("div[npc_id='<%= $npc->{'id'} %>']"),'npc<%= $npc->{'id'} %>');
-			% foreach my $ability (@{$spells->{$npc->{'uuid'}}->{'abilities'}}){
-			npc<%= $npc->{'id'} %>.register_ability(<%= $ability %>);
+			npc<%= $i %> = new NPC($("div[npc_id='<%= $npc->{'id'} %>']"),'npc<%= $npc->{'id'} %>');
+			% foreach my $ability (@{$spells->{$npc->{'id'}}->{'abilities'}}){
+			npc<%= $i %>.register_ability('<%= $ability %>');
+			% $i++;
 			% }
 		% }
 		
+		% $i = 1;
 		% foreach my $creature (@{$creatures}){
-			creature<%= $creature->{'id'} %> = new CREATURE($("div[creature_id='<%= $creature->{'id'} %>']"),'creature<%= $creature->{'id'} %>');
-			% foreach my $ability (@{$spells->{$creature->{'uuid'}}->{'abilities'}}){
-			creature<%= $creature->{'id'} %>.register_ability(<%= $ability %>);
+			creature<%= $i %> = new CREATURE($("div[creature_id='<%= $creature->{'id'} %>']"),'creature<%= $creature->{'id'} %>');
+			% foreach my $ability (keys %{$spells->{$creature->{'id'}}->{'abilities'}}){
+			creature<%= $i %>.register_ability('<%= $spells->{$creature->{'id'}}->{'abilities'}->{$ability}->{'spell_entry_id'} %>');
 			% }
 		% }
 	});

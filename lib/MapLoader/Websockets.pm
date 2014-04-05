@@ -2,10 +2,11 @@ package MapLoader::Websockets;
 use Mojo::Base 'Mojolicious::Controller';
 
 # TODO: Add all kinds of validation and error checking. srsly.
-sub d{
+sub dispatch{
 	my $self = shift;
 	my $tx = $self->tx;
 	
+	Mojo::IOLoop->stream($tx)->timeout(300);
 	my $action = {
 		'move' => sub {
 			my ($self,$data) = @_;

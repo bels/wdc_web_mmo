@@ -41,7 +41,14 @@ sub play_game {
 	$query = "select * from get_spells_for_map(?)";
 	$sth = $dbh->prepare($query);
 	$sth->execute($map_id);
-	$self->stash(spells => $sth->fetchall_hashref({'entity_id'}));
+	my $spells = $sth->fetchall_arrayref({});
+	my $new_spells;
+
+	foreach $_ (@{$spells}){
+		$new_spells->{$_->{'entity_id'}}->{'abilities'}->{$_->{'spell_entry_id'}} = $_;
+	}
+
+	$self->stash(spells => $new_spells);
 	$self->stash(map_id => $map_id);
 	
 	$self->render(

@@ -98,11 +98,11 @@ BEGIN
 		SELECT j,
 		(SELECT x FROM character_location WHERE character_id = j AND "mid" = mid_val),
 		(SELECT y FROM character_location WHERE character_id = j AND "mid" = mid_val), 
-		(SELECT "path" FROM sprites WHERE id = (SELECT sprite_id FROM characters WHERE id = (SELECT character_id FROM character_location WHERE character_location.id = j))),
-		(SELECT offset_x FROM sprites WHERE id = (SELECT sprite_id FROM characters WHERE id = (SELECT character_id FROM character_location WHERE character_location.id = j))),
-		(SELECT offset_y FROM sprites WHERE id = (SELECT sprite_id FROM characters WHERE id = (SELECT character_id FROM character_location WHERE character_location.id = j))),
+		(SELECT "path" FROM sprites WHERE id = (SELECT sprite_id FROM characters WHERE id = (SELECT character_id FROM character_location WHERE character_location.character_id = j))),
+		(SELECT offset_x FROM sprites WHERE id = (SELECT sprite_id FROM characters WHERE id = (SELECT character_id FROM character_location WHERE character_location.character_id = j))),
+		(SELECT offset_y FROM sprites WHERE id = (SELECT sprite_id FROM characters WHERE id = (SELECT character_id FROM character_location WHERE character_location.character_id = j))),
 		(SELECT tile_id FROM character_location WHERE character_id = j AND "mid" = mid_val),
-		(SELECT uuid FROM characters WHERE id = j)
+		(SELECT id FROM characters WHERE id = j)
 		INTO pd;
 		RETURN NEXT pd;
 	END LOOP;

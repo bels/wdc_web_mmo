@@ -4,7 +4,7 @@ DECLARE
 	map_id_val uuid;
 	account_id_val uuid;
 BEGIN
-
+	select create_map('Map1',1024,1024);
 	INSERT INTO account(
 		name,
 		password
@@ -22,7 +22,7 @@ BEGIN
 		) VALUES (
 			'New Guy',
 			account_id_val,
-			(select id from sprites limit 1)
+			(select id from sprites where description = 'Player Avatar' limit 1)
 		) returning id into new_character_id;
 
 	select
