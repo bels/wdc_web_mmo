@@ -33,10 +33,16 @@ BEGIN
 
 	INSERT INTO character_location(
 		character_id,
-		"mid"
+		"mid",
+		x,
+		y,
+		tile_id
 	) VALUES (
 		new_character_id,
-		map_id_val
+		map_id_val,
+		1,
+		1,
+		1
 	);
 END;
 $$ language plpgsql;

@@ -9,7 +9,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON characters TO map;
 
 -- Types
 
-CREATE TYPE character_position_data AS (id uuid, x INTEGER, y INTEGER, sprite_path TEXT, offset_x INTEGER, offset_y INTEGER, tile_id uuid  );
+CREATE TYPE character_position_data AS (id uuid, x INTEGER, y INTEGER, sprite_path TEXT, offset_x INTEGER, offset_y INTEGER, tile_id INTEGER  );
 CREATE TYPE character_data AS (id uuid , name TEXT, "path" TEXT, offset_x TEXT, offset_y TEXT);
 
 -- Comments
