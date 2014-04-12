@@ -17,7 +17,6 @@ $(document).ready(function(){
 				'distance': '+=' + tile_size_x
 			};
 			window.UI.move(data);
-			Dispatcher.execute_abilities();
 		}
 		if(event.which == 37){
 			var data = {
@@ -26,7 +25,6 @@ $(document).ready(function(){
 				'distance': '-=' + tile_size_x
 			};
 			window.UI.move(data);
-			Dispatcher.execute_abilities();
 		}
 		if(event.which == 40){
 			var data = {
@@ -35,7 +33,6 @@ $(document).ready(function(){
 				'distance': '+=' + tile_size_y
 			};
 			window.UI.move(data);
-			Dispatcher.execute_abilities();
 		}
 		if(event.which == 38){
 			var data = {
@@ -44,7 +41,6 @@ $(document).ready(function(){
 				'distance': '-=' + tile_size_y
 			};
 			window.UI.move(data);
-			Dispatcher.execute_abilities();
 		}
 	});
 	

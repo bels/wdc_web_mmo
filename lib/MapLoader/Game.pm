@@ -43,12 +43,15 @@ sub play_game {
 	$sth->execute($map_id);
 	my $spells = $sth->fetchall_arrayref({});
 	my $new_spells;
-
+	my $all_spells; #list of individual spells on the map with no mapping to characters/npcs/creatures
+	
 	foreach $_ (@{$spells}){
 		$new_spells->{$_->{'entity_id'}}->{'abilities'}->{$_->{'spell_entry_id'}} = $_;
+		$all_spells->{$_->{'spell_entry_id'}} = $_;
 	}
 
-	$self->stash(spells => $new_spells);
+	$self->stash(spells => $all_spells);
+	$self->stash(spell_mappings => $new_spells);
 	$self->stash(map_id => $map_id);
 	
 	$self->render(

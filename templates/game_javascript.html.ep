@@ -30,21 +30,46 @@
 			},
 			execute_abilities: function(data){
 				//this function will loop through all registered entities and check for abilities/actions that should affect the current entity
+				var object1 = {
+					'x': data.Entity.get_x(),
+					'y': data.Entity.get_y()
+				};
 				for(var i=0; i < Dispatcher.Entities.length; i++){
-					for(var counter = 0; counter < window[Dispatcher.Entities[i]].abilities.length; counter++){
-						var distance = 10; //this needs to be some calculation that determines the distance between two objects in an x/y grid
-
-						if(window[Dispatcher.Entities[i]].abilities[counter].range > distance){
-							var info = {
-								'distance': distance,
-								'target': '',
-								'attacker': '',
-								'direction': '',
-								'animation_offset_x': window[Dispatcher.Entities[i]].abilities[counter].animation_offset_x,
-								'animation_offset_y': window[Dispatcher.Entities[i]].abilities[counter].animation_offset_y,
-								'spell_entry': window[Dispatcher.Entities[i]].abilities[counter].spell_entry_id
+					if(window[Dispatcher.Entities[i]].get_name() !== data.Entity.get_name()){
+						var object2 = {
+							'x': window[Dispatcher.Entities[i]].get_x(),
+							'y': window[Dispatcher.Entities[i]].get_y()
+						};
+						var distance = UI.check_distance(object1,object2);
+						for(var counter = 0; counter < window[Dispatcher.Entities[i]].abilities.length; counter++){
+							//the following line is a bit ridiculous.  it pulls the range information out of the abilities array
+							//first it must find the abilities tied to the entity
+							if(window[Dispatcher.Entities[i]].abilities[counter].get_range > distance){
+								var direction = '';
+								var part1 = 'north';
+								var part2 = 'west';
+								if(data.Entity.get_x() > Dispatcher.Entities[i].get_x()){
+									part2 = 'east';
+								} else if(data.Entity.get_x() === Dispatcher.Entities[i].get_x()){
+									part2 = '';
+								}
+								if(data.Entity.get_y() < Dispatcher.Entities[i].get_y()){
+									part1 = 'south';
+								} else if(data.Entity.get_y() === Dispatcher.Entities[i].get_y){
+									part1 = '';
+								}
+								direction = part1 + part2;
+								var info = {
+									'distance': distance,
+									'target': data.Entity.get_dom(),
+									'attacker': Dispatcher.Entities[i].get_dom(),
+									'direction': direction,
+									'animation_offset_x': window[Dispatcher.Entities[i]].abilities[counter].animation_offset_x,
+									'animation_offset_y': window[Dispatcher.Entities[i]].abilities[counter].animation_offset_y,
+									'spell_entry_id': window[Dispatcher.Entities[i]].abilities[counter].get_id()
+								};
+								UI.animateAction(info);
 							}
-							UI.animateAction(info);
 						}
 					}
 				}
@@ -78,14 +103,15 @@
 						}, 500, function(){
 							data.Entity.set_offset(jqO.offset());
 							if(data.direction === 'up'){
-								data.Entity.set_y(data.Entity.get_y() - 1);
+								data.Entity.set_y(data.Entity.get_y() + 1);
 								data.Entity.increment_tile(-tiles_x);
 							} else {
-								data.Entity.set_y(data.Entity.get_y() + 1);
+								data.Entity.set_y(data.Entity.get_y() - 1);
 								data.Entity.increment_tile(tiles_x);
 							}
 						});
 					}
+					Dispatcher.execute_abilities(data);
 					ws.send(JSON.stringify({'data': data, 'action': 'move'}));
 				}
 			},
@@ -171,6 +197,10 @@
 					}
 					$('#' + data.spell_entry_id).offset({top: animation_offest.top, left: animation_offset.left});
 				}
+			},
+			check_distance: function(object1,object2){
+				var distance = Math.sqrt(Math.pow((object2.x - object1.x),2) + Math.pow((object2.y - object2.y),2));
+				return Math.abs(distance);
 			}
 		};
 
@@ -181,14 +211,20 @@
 			}
 		};
 		
-		function Ability(){
-			this.id,
-			this.range = 0,
-			this.damage = 0,
-			this.cast_time = 0,
-			this.name = ''
-			this.set_name: function(data){
+		function Ability(uuid,r,d,c,n){
+			this.id = uuid,
+			this.range = r,
+			this.damage = d,
+			this.cast_time = c,
+			this.name = n,
+			this.set_name = function(data){
 				this.name = data;
+			},
+			this.get_range = function(data){
+				return this.range;
+			},
+			this.get_id = function(data){
+				return this.uuid;
 			}
 		};
 
@@ -293,6 +329,13 @@
 		Character.prototype = new Entity();
 		Character.prototype.constructor = Character;
 		
+		//registering all abilities on the map
+		% my $j = 1;
+		% foreach my $ability (keys %{$spells}){
+			ability<%= $j %> = new Ability('<%= $spells->{$ability}->{'spell_entry_id'} %>',<%= $spells->{$ability}->{'range'} %>,<%= $spells->{$ability}->{'damage'} %>,<%= $spells->{$ability}->{'cast_time'} %>,'<%= $spells->{$ability}->{'name'} %>');
+			% $j++;
+		% }
+		
 		% my $i = 1;
 		% foreach my $character (@{$characters}){
 			% if(session('character_id') eq $character->{'id'}){
@@ -304,7 +347,7 @@
 				player.set_offset();
 				player.set_current_tile(<%= $character->{'tile_id'} %>);
 				
-				% foreach my $ability (@{$spells->{$character->{'id'}}->{'abilities'}}){
+				% foreach my $ability (@{$spell_mappings->{$character->{'id'}}->{'abilities'}}){
 				player.register_ability(<%= $ability %>);
 				% }
 			% } else {
@@ -343,9 +386,15 @@
 		% foreach my $npc (@{$npcs}){
 		
 			npc<%= $i %> = new NPC($("div[npc_id='<%= $npc->{'id'} %>']"),'npc<%= $i %>');
-			% foreach my $ability (@{$spells->{$npc->{'id'}}->{'abilities'}}){
-			ability<%= $i %> = new Ability();
-			npc<%= $i %>.register_ability('<%= $ability %>');
+			
+			//tieing abilities to npcs
+			//placing a copy of an ability javascript object in the abilities array of the npc
+			% foreach my $ability (keys %{$spell_mappings->{$npc->{'id'}}->{'abilities'}}){
+			for(var counter = 0; counter < Abilities.Abilities.length; counter++){
+				if(Abilities.Abilities[counter].get_id == '<%= $spell_mappings->{$npc->{'id'}}->{'abilities'}->{$ability}->{'spell_entry_id'} %>'){
+					npc<%= $i %>.register_ability(Abilities.Abilities[counter]);
+				}
+			}
 			% $i++;
 			% }
 		% }
@@ -353,8 +402,14 @@
 		% $i = 1;
 		% foreach my $creature (@{$creatures}){
 			creature<%= $i %> = new CREATURE($("div[creature_id='<%= $creature->{'id'} %>']"),'creature<%= $i %>');
-			% foreach my $ability (keys %{$spells->{$creature->{'id'}}->{'abilities'}}){
-			creature<%= $i %>.register_ability('<%= $spells->{$creature->{'id'}}->{'abilities'}->{$ability}->{'spell_entry_id'} %>');
+			//placing a copy of an ability javascript object in the abilities array of the creature
+			% foreach my $ability (keys %{$spell_mappings->{$creature->{'id'}}->{'abilities'}}){
+			for(var counter = 0; counter < Abilities.Abilities.length; counter++){
+				if(Abilities.Abilities[counter].get_id == '<%= $spell_mappings->{$creature->{'id'}}->{'abilities'}->{$ability}->{'spell_entry_id'} %>'){
+					creature<%= $i %>.register_ability(Abilities.Abilities[counter]);
+				}
+			}
+			% $i++;
 			% }
 		% }
 	});
