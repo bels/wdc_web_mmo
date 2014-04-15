@@ -13,3 +13,10 @@ BEGIN
 	RETURN;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_all_available_animations() RETURNS SETOF animation_template as $$
+BEGIN
+     RETURN QUERY
+	  SELECT * FROM animation_template;
+END;
+$$ LANGUAGE plpgsql;

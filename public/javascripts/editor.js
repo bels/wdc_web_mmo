@@ -98,12 +98,13 @@ $(document).ready(function(){
 	});
 	
 	$('.sprite_tile').click(function(){
+	       var parent_form = $(this).parent();
 		$(this).css('border','1px solid black');
 		$('<input />', {
 			type: 'hidden',
 			name: 'sprite_id',
 			value: $(this).attr('sprite_id')
-		}).appendTo($('#creature_form'));
+		}).appendTo(parent_form);
 	});
 });
 

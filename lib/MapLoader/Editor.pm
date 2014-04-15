@@ -136,6 +136,12 @@ sub spawn_placement{
 sub spell{
 	my $self = shift;
 	
+	my $dbh = $self->app->dbh;
+	my $query = "select * from get_all_available_animations()";
+	my $sth = $dbh->prepare($query);
+	$sth->execute;
+	$self->stash(animations => $sth->fetchall_arrayref({}));
+	
 	$self->render(
 		template => 'spell_editor',
 		javascripts => ['editor.js'],

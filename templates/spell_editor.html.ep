@@ -41,7 +41,9 @@
 				%= label_for dot => 'Damage Over Time?', class => 'control-label'
 				%= check_box 'dot', id => 'dot', class=> 'form-control'
 				%= label_for animation => 'Animation', class => 'control-label'
-				%= text_field 'animation', id => 'animation', placeholder => 'Right now you have to hard code the uuid of the animation. This will change', class=> 'form-control'
+				% foreach my $animation (@{$animations}){
+					<div class="sprite_tile tile available_thumbnail" style="background-position: -<%= $animation->{'offset_x'} %>px <%= $animation->{'offset_y'} %>px; height: <%= $animation->{'y_size'} %>px; width: <%= $animation->{'x_size'} %>px; float:left;" animation_id="<%= $animation->{'id'} %>"></div>
+				% }
 				<br />
 				<br />
 				<button type="submit" class="btn btn-default">Save Spell</button>
