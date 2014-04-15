@@ -23,5 +23,4 @@ psql map_loader < ./spells.sql
 psql map_loader < ./spawn.sql
 psql map_loader < ./initialize_tiles.sql
 psql map_loader < ./initialize_sprites.sql
-#need to fix the next line in that it has to run after a map is created.  Some type of default map needs to be created or something
-#psql map_loader < initialize_characters.sql
+psql map_loader < ./initialize_characters.sql
