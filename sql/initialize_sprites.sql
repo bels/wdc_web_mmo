@@ -31,7 +31,7 @@ select * from add_sprite_data(
 	'0',
 	'0',
 	32,
-	32,
+	32
 );
 
 select * from add_animation(0,0,'Fireball');
