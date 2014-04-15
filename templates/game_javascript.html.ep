@@ -44,29 +44,29 @@
 						for(var counter = 0; counter < window[Dispatcher.Entities[i]].abilities.length; counter++){
 							//the following line is a bit ridiculous.  it pulls the range information out of the abilities array
 							//first it must find the abilities tied to the entity
-							if(window[Dispatcher.Entities[i]].abilities[counter].get_range > distance){
+							if(window[window[Dispatcher.Entities[i]].abilities[counter]].get_range() > distance){
 								var direction = '';
 								var part1 = 'north';
 								var part2 = 'west';
-								if(data.Entity.get_x() > Dispatcher.Entities[i].get_x()){
+								if(data.Entity.get_x() > window[Dispatcher.Entities[i]].get_x()){
 									part2 = 'east';
-								} else if(data.Entity.get_x() === Dispatcher.Entities[i].get_x()){
+								} else if(data.Entity.get_x() === window[Dispatcher.Entities[i]].get_x()){
 									part2 = '';
 								}
-								if(data.Entity.get_y() < Dispatcher.Entities[i].get_y()){
+								if(data.Entity.get_y() < window[Dispatcher.Entities[i]].get_y()){
 									part1 = 'south';
-								} else if(data.Entity.get_y() === Dispatcher.Entities[i].get_y){
+								} else if(data.Entity.get_y() === window[Dispatcher.Entities[i]].get_y){
 									part1 = '';
 								}
 								direction = part1 + part2;
 								var info = {
 									'distance': distance,
 									'target': data.Entity.get_dom(),
-									'attacker': Dispatcher.Entities[i].get_dom(),
+									'attacker': window[Dispatcher.Entities[i]].get_dom(),
 									'direction': direction,
-									'animation_offset_x': window[Dispatcher.Entities[i]].abilities[counter].animation_offset_x,
-									'animation_offset_y': window[Dispatcher.Entities[i]].abilities[counter].animation_offset_y,
-									'spell_entry_id': window[Dispatcher.Entities[i]].abilities[counter].get_id()
+									'animation_offset_x': window[window[Dispatcher.Entities[i]].abilities[counter]].animation_offset_x,
+									'animation_offset_y': window[window[Dispatcher.Entities[i]].abilities[counter]].animation_offset_y,
+									'spell_entry_id': window[window[Dispatcher.Entities[i]].abilities[counter]].get_id()
 								};
 								UI.animateAction(info);
 							}
@@ -150,53 +150,27 @@
 					'top': 0,
 					'left': 0
 				};
-				var target_offset = data.target.offset;
-				var attacker_offset = data.attacker.offset;
+				var target_offset = data.target.offset();
+				var attacker_offset = data.attacker.offset();
 				if(data.direction == 'west' || data.direction == 'northwest' || data.direction == 'southwest'){
-					$('#map').append('<div class="animation" id="' + data.spell_entry_id + '" style="background-position: ' + data.animation_offset_x + 'px ' + animation_offset_y + 'px; top: ' + attack_offset.top + 'px; left: ' + attacker_offset.left - 32 + 'px;"></div>')
+					$('#map').append('<div class="animation" id="' + data.spell_entry_id + '" style="background-position: ' + data.animation_offset_x + 'px ' + data.animation_offset_y + 'px; top: ' + attacker_offset.top + 'px; left: ' + parseInt(attacker_offset.left - 32) + 'px; height: 32px; width: 32px;"></div>')
 				}
 				if(data.direction == 'east' || data.direction == 'northeast' || data.direction == 'southeast'){
-					$('#map').append('<div class="animation" id="' + data.spell_entry_id + '" style="background-position: ' + data.animation_offset_x + 'px ' + animation_offset_y + 'px; top: ' + attack_offset.top + 'px; left: ' + (+attacker_offset.left + 32) + 'px;"></div>')
+					$('#map').append('<div class="animation" id="' + data.spell_entry_id + '" style="background-position: ' + data.animation_offset_x + 'px ' + data.animation_offset_y + 'px; top: ' + attacker_offset.top + 'px; left: ' + parseInt(attacker_offset.left + 32) + 'px; height: 32px; width: 32px;"></div>')
 				}
 				if(data.direction == 'north'){
-					$('#map').append('<div class="animation" id="' + data.spell_entry_id + '" style="background-position: ' + data.animation_offset_x + 'px ' + animation_offset_y + 'px; top: ' + (+attack_offset.top + 32) + 'px; left: ' + attacker_offset.left + 'px;"></div>')
+					$('#map').append('<div class="animation" id="' + data.spell_entry_id + '" style="background-position: ' + data.animation_offset_x + 'px ' + data.animation_offset_y + 'px; top: ' + parseInt(attacker_offset.top + 32) + 'px; left: ' + attacker_offset.left + 'px; height: 32px; width: 32px;"></div>')
 				}
-				if(data.direction == 'north'){
-					$('#map').append('<div class="animation" id="' + data.spell_entry_id + '" style="background-position: ' + data.animation_offset_x + 'px ' + animation_offset_y + 'px; top: ' + attack_offset.top - 32 + 'px; left: ' + attacker_offset.left + 'px;"></div>')
+				if(data.direction == 'south'){
+					$('#map').append('<div class="animation" id="' + data.spell_entry_id + '" style="background-position: ' + data.animation_offset_x + 'px ' + data.animation_offset_y + 'px; top: ' + parseInt(attacker_offset.top - 32) + 'px; left: ' + attacker_offset.left + 'px; height: 32px; width: 32px;"></div>')
 				}
-				
-				var animation_offest = $('#' + data.spell_entry_id).offset;
-				while(animation_offest.left != target_offeset.left && animation_offest.top != target_offeset.top){
-					if(data.direction == 'west'){
-						animation_offset.left--;
-					}
-					if(data.direction == 'northwest'){
-						animation_offset.top--;
-						animation_offset.left--;
-					}
-					if(data.direction == 'southwest'){
-						animation_offset.top++;
-						animation_offset.left--;
-					}
-					if(data.direction == 'north'){
-						animation_offset.top++;
-					}
-					if(data.direction == 'south'){
-						animation_offset.top--;
-					}
-					if(data.direction == 'east'){
-						animation_offset.left++;
-					}
-					if(data.direction == 'northeast'){
-						animation_offset.top--;
-						animation_offset.left++;
-					}
-					if(data.direction == 'southeast'){
-						animation_offset.top++;
-						animation_offset.left++;
-					}
-					$('#' + data.spell_entry_id).offset({top: animation_offest.top, left: animation_offset.left});
-				}
+				$('#' + data.spell_entry_id).animate({
+					top: target_offset.top,
+					left: target_offset.left
+				}, 500, function(){
+					
+					
+				});
 			},
 			check_distance: function(object1,object2){
 				var distance = Math.sqrt(Math.pow((object2.x - object1.x),2) + Math.pow((object2.y - object2.y),2));
@@ -204,31 +178,39 @@
 			}
 		};
 
-		Abilities = {
-			'Abilities': [],
-			register: function(data){
-				this.Abilities.push(data);
-			}
-		};
-		
-		function Ability(uuid,r,d,c,n){
-			this.id = uuid,
-			this.range = r,
-			this.damage = d,
-			this.cast_time = c,
-			this.name = n,
-			this.set_name = function(data){
-				this.name = data;
-			},
-			this.get_range = function(data){
-				return this.range;
-			},
-			this.get_id = function(data){
-				return this.uuid;
-			}
-		};
+		var AllAbilities = [];
 
-		Ability.prototype = new Ability();
+		var Ability = (function() {
+
+			var ab = function (uuid,r,d,c,n,object_name,x,y){
+				AllAbilities.push(object_name);
+				this.id = uuid;
+				this.range = r;
+				this.damage = d;
+				this.cast_time = c;
+				this.name = n;
+				this.animation_offset_y = y;
+				this.animation_offset_x = x;
+				this.set_name = function(data){
+					this.name = data;
+				};
+				this.get_range = function(){
+					return this.range;
+				};
+				this.get_id = function(){
+					return this.id;
+				};
+				this.get_name = function(){
+					return this.name;
+				};
+				this.set_animation_offset = function(x,y){
+					this.animation_offset_y = y;
+					this.animation_offset_x = x;
+				};
+			};
+
+			return ab;
+		})();
 
 		function Entity() {
 			this.id = 0;
@@ -246,77 +228,72 @@
 			this.current_map = 1;
 			this.domElement = null;
 			this.name = '';
-			this.abilities = [];
-		};
-		Entity.prototype = {
-			move_x: function(data){
+			
+			this.move_x = function(data){
 
-			},
-			move_y: function(data){
+			};
+			this.move_y = function(data){
 			
-			},
-			adjustStatus: function(data){
+			};
+			this.adjustStatus = function(data){
 			
-			},
-			adjustStats: function(data){
+			};
+			this.adjustStats = function(data){
 			
-			},
-			set_offset: function(data){
+			};
+			this.set_offset = function(data){
 				if(typeof data === 'undefined' || data === null){
 					this.offset = this.domElement.offset();
 				} else {
 					this.offset = data;
 				}
-			},
-			set_x: function(data){
+			};
+			this.set_x = function(data){
 				this.x = data;
-			},
-			set_y: function(data){
+			};
+			this.set_y = function(data){
 				this.y = data;
-			},
-			get_offset_x: function(data){
+			};
+			this.get_offset_x = function(data){
 				return this.offset.left;
-			},
-			get_offset_y: function(data){
+			};
+			this.get_offset_y = function(data){
 				return this.offset.top;
-			},
-			get_x: function(data){
+			};
+			this.get_x = function(data){
 				return this.x;
-			},
-			get_y: function(data){
+			};
+			this.get_y = function(data){
 				return this.y;
-			},
-			get_dom: function(){
+			};
+			this.get_dom = function(){
 				return this.domElement;
-			},
-			increment_tile: function(data){
+			};
+			this.increment_tile = function(data){
 				this.current_tile += data;
-			},
-			get_current_tile: function(data){
+			};
+			this.get_current_tile = function(data){
 				return this.current_tile;
-			},
-			set_id: function(data){
+			};
+			this.set_id = function(data){
 				this.id = data;
-			},
-			set_map: function(data){
+			};
+			this.set_map = function(data){
 				this.current_map = data;
-			},
-			get_map: function(){
+			};
+			this.get_map = function(){
 				return this.current_map;
-			},
-			set_current_tile: function(data){
+			};
+			this.set_current_tile = function(data){
 				this.current_tile = data;
-			},
-			get_name: function(data){
+			};
+			this.get_name = function(data){
 				return this.name;
-			},
-			set_name: function(data){
+			};
+			this.set_name = function(data){
 				this.name = data;
-			},
-			register_ability: function(data){
-				//data should be an object that includes information about the ability like range, damage, name, etc...
-				this.abilities.push(data);
-			}
+			};
+			
 		};
 
 		function Character(o,name){
@@ -332,7 +309,7 @@
 		//registering all abilities on the map
 		% my $j = 1;
 		% foreach my $ability (keys %{$spells}){
-			ability<%= $j %> = new Ability('<%= $spells->{$ability}->{'spell_entry_id'} %>',<%= $spells->{$ability}->{'range'} %>,<%= $spells->{$ability}->{'damage'} %>,<%= $spells->{$ability}->{'cast_time'} %>,'<%= $spells->{$ability}->{'name'} %>');
+			ability<%= $j %> = new Ability('<%= $spells->{$ability}->{'spell_entry_id'} %>',<%= $spells->{$ability}->{'range'} %>,<%= $spells->{$ability}->{'damage'} %>,<%= $spells->{$ability}->{'cast_time'} %>,'<%= $spells->{$ability}->{'name'} %>','ability<%= $j %>',<%= $spells->{$ability}->{'animation_offset_x'} %>,<%= $spells->{$ability}->{'animation_offset_y'} %>);
 			% $j++;
 		% }
 		
@@ -364,19 +341,31 @@
 			% }
 		% }
 		
-		function NPC(o,name){
+		function NPC(o,name,x,y){
 			this.domElement = o;
 			this.set_name(name);
+			this.set_x(x);
+			this.set_y(y);
 			window.Dispatcher.register(this.name);
+			this.abilities = [];
+			this.register_ability = function(data){
+				this.abilities.push(data);
+			};
 		}
 		
 		NPC.prototype = new Entity;
 		NPC.prototype.constructor = NPC;
 		
-		function CREATURE(o,name){
+		function CREATURE(o,name,x,y){
 			this.domElement = o;
 			this.set_name(name);
+			this.set_x(x);
+			this.set_y(y);
+			this.abilities = [];
 			window.Dispatcher.register(this.name);
+			this.register_ability = function(data){
+				this.abilities.push(data);
+			};
 		}
 		
 		CREATURE.prototype = new Entity;
@@ -385,32 +374,33 @@
 		% $i = 1;
 		% foreach my $npc (@{$npcs}){
 		
-			npc<%= $i %> = new NPC($("div[npc_id='<%= $npc->{'id'} %>']"),'npc<%= $i %>');
+			npc<%= $i %> = new NPC($("div[npc_id='<%= $npc->{'id'} %>']"),'npc<%= $i %>',<%= $npc->{'x'} %>,<%= $npc->{'y'} %>);
 			
 			//tieing abilities to npcs
 			//placing a copy of an ability javascript object in the abilities array of the npc
 			% foreach my $ability (keys %{$spell_mappings->{$npc->{'id'}}->{'abilities'}}){
-			for(var counter = 0; counter < Abilities.Abilities.length; counter++){
-				if(Abilities.Abilities[counter].get_id == '<%= $spell_mappings->{$npc->{'id'}}->{'abilities'}->{$ability}->{'spell_entry_id'} %>'){
-					npc<%= $i %>.register_ability(Abilities.Abilities[counter]);
+			for(var counter = 0; counter < AllAbilities.length; counter++){
+				if(window[AllAbilities[counter]].get_id() == '<%= $spell_mappings->{$npc->{'id'}}->{'abilities'}->{$ability}->{'spell_entry_id'} %>'){
+					npc<%= $i %>.register_ability(AllAbilities[counter]);
 				}
 			}
-			% $i++;
 			% }
+			% $i++;
 		% }
 		
 		% $i = 1;
 		% foreach my $creature (@{$creatures}){
-			creature<%= $i %> = new CREATURE($("div[creature_id='<%= $creature->{'id'} %>']"),'creature<%= $i %>');
+			creature<%= $i %> = new CREATURE($("div[creature_id='<%= $creature->{'id'} %>']"),'creature<%= $i %>',<%= $creature->{'x'} %>,<%= $creature->{'y'} %>);
 			//placing a copy of an ability javascript object in the abilities array of the creature
 			% foreach my $ability (keys %{$spell_mappings->{$creature->{'id'}}->{'abilities'}}){
-			for(var counter = 0; counter < Abilities.Abilities.length; counter++){
-				if(Abilities.Abilities[counter].get_id == '<%= $spell_mappings->{$creature->{'id'}}->{'abilities'}->{$ability}->{'spell_entry_id'} %>'){
-					creature<%= $i %>.register_ability(Abilities.Abilities[counter]);
+			for(var counter = 0; counter < AllAbilities.length; counter++){
+				if(window[AllAbilities[counter]].get_id() == '<%= $spell_mappings->{$creature->{'id'}}->{'abilities'}->{$ability}->{'spell_entry_id'} %>'){
+				
+					creature<%= $i %>.register_ability(AllAbilities[counter]);
 				}
 			}
-			% $i++;
 			% }
+			% $i++;
 		% }
 	});
 </script>
