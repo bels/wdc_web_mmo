@@ -2,6 +2,8 @@ CREATE TABLE animation_template(
 	id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
 	offset_x INTEGER,
 	offset_y INTEGER,
+	x_size INTEGER,
+	y_size INTEGER,
 	name TEXT
 );
 
