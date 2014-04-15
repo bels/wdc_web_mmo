@@ -12,10 +12,10 @@ SQL
 fi
 
 psql map_loader < ./main.sql
+psql map_loader < ./sprites.sql
 psql map_loader < ./characters.sql
 psql map_loader < ./creature.sql
 psql map_loader < ./npc.sql
-psql map_loader < ./sprites.sql
 psql map_loader < ./add_tile_data.sql
 psql map_loader < ./tile_info_from_layer_type_id.sql
 psql map_loader < ./animation.sql

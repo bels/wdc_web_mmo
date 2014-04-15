@@ -4,7 +4,7 @@ DECLARE
 	map_id_val uuid;
 	account_id_val uuid;
 BEGIN
-	select create_map('Map1',1024,1024);
+	PERFORM create_map('Map1',1024,1024);
 	INSERT INTO account(
 		name,
 		password
