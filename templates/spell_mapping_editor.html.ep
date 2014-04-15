@@ -17,16 +17,16 @@
 			</div>
 			% }
 			%= form_for spell_mapping_save => (method => 'POST', role => 'form', class => 'form-horizontal') => begin
-				%= label_for spell => 'Spell Name', class => 'control-label'
-				<select name="spell">
-				% foreach my $spell (@{$spells}){
-					<option value="<%= $spell->{'spell_entry_id'} %>"><%= $spell->{'name'} %></option>
+				%= label_for creature => 'Entity Name', class => 'control-label'
+				<select class="form-control" name="entity" id="entity">
+				% foreach my $entity (@{$entities}){
+					<option value="<%= $entity->{'id'} %>"><%= $entity->{'name'} %></option>
 				%}
 				</select>
-				%= label_for creature => 'Entity Name', class => 'control-label'
-				<select name="creature">
-				% foreach my $creature (@{$creatures}){
-					<option value="<%= $creature->{'id'} %>"><%= $creature->{'name'} %></option>
+				%= label_for spell => 'Spell Name', class => 'control-label'
+				<select multiple class="form-control" name="spell" id="spell">
+				% foreach my $spell (@{$spells}){
+					<option value="<%= $spell->{'spell_entry_id'} %>"><%= $spell->{'name'} %></option>
 				%}
 				</select>
 				<br />

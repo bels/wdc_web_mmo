@@ -59,6 +59,8 @@
 									part1 = '';
 								}
 								direction = part1 + part2;
+								var s1 = window[window[Dispatcher.Entities[i]].abilities[counter]].get_id();
+								var s2 = window[Dispatcher.Entities[i]].get_name();
 								var info = {
 									'distance': distance,
 									'target': data.Entity.get_dom(),
@@ -66,7 +68,7 @@
 									'direction': direction,
 									'animation_offset_x': window[window[Dispatcher.Entities[i]].abilities[counter]].animation_offset_x,
 									'animation_offset_y': window[window[Dispatcher.Entities[i]].abilities[counter]].animation_offset_y,
-									'spell_entry_id': window[window[Dispatcher.Entities[i]].abilities[counter]].get_id()
+									'spell_entry_id':  s1.concat(s2)
 								};
 								UI.animateAction(info);
 							}
@@ -91,9 +93,11 @@
 							if(data.direction === 'right'){
 								data.Entity.set_x(data.Entity.get_x() + 1);
 								data.Entity.increment_tile(1);
+								Dispatcher.execute_abilities(data);
 							} else {
 								data.Entity.set_x(data.Entity.get_x() - 1);
 								data.Entity.increment_tile(-1);
+								Dispatcher.execute_abilities(data);
 							}
 						});
 					}
@@ -105,13 +109,14 @@
 							if(data.direction === 'up'){
 								data.Entity.set_y(data.Entity.get_y() + 1);
 								data.Entity.increment_tile(-tiles_x);
+								Dispatcher.execute_abilities(data);
 							} else {
 								data.Entity.set_y(data.Entity.get_y() - 1);
 								data.Entity.increment_tile(tiles_x);
+								Dispatcher.execute_abilities(data);
 							}
 						});
 					}
-					Dispatcher.execute_abilities(data);
 					ws.send(JSON.stringify({'data': data, 'action': 'move'}));
 				}
 			},
@@ -168,8 +173,7 @@
 					top: target_offset.top,
 					left: target_offset.left
 				}, 500, function(){
-					
-					
+					$('#' + data.spell_entry_id).remove();
 				});
 			},
 			check_distance: function(object1,object2){
@@ -277,6 +281,9 @@
 			};
 			this.set_id = function(data){
 				this.id = data;
+			};
+			this.get_id = function (){
+				return this.id;
 			};
 			this.set_map = function(data){
 				this.current_map = data;

@@ -74,6 +74,11 @@ sub spell_mapping_save{
 	my $sth = $dbh->prepare($query);
 	$sth->execute($spell,$entity);
 	
+	if($dbh->err != 7){
+		$self->flash(success => 'Spell: ' . $spell . ' mapped successfully');
+	} else {
+		$self->flash(error => 'Spell mapping failed.' . $dbh->errstr);
+	}
 	$self->redirect_to($self->req->headers->referrer);
 }
 1;
