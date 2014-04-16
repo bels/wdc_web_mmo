@@ -34,4 +34,4 @@ select * from add_sprite_data(
 	32
 );
 
-select * from add_animation(0,0,'Fireball');
+select * from add_animation(0,0,'Fireball',32,32);

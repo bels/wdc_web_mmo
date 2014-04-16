@@ -24,6 +24,10 @@
 	background-image: url('/images/sprites.png');
 }
 
+.animation{
+	background-image: url('/images/animations.png') !important;
+}
+
 .tile{
 	float: left;
 }

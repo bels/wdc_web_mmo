@@ -21,3 +21,7 @@
 .lighting{
 	background-image: url('/images/lighting_layer.png');
 }
+
+.highlight{
+	border: solid #357EBD 1px;
+}

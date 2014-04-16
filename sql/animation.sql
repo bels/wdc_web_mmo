@@ -9,9 +9,9 @@ CREATE TABLE animation_template(
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON animation_template TO map;
 
-CREATE OR REPLACE FUNCTION add_animation(offset_x_val INTEGER, offset_y_val INTEGER, name_val TEXT) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION add_animation(offset_x_val INTEGER, offset_y_val INTEGER, name_val TEXT, x_size_val INTEGER, y_size_val INTEGER) RETURNS VOID AS $$
 BEGIN
-	INSERT INTO animation_template(offset_x,offset_y,name) VALUES(offset_x_val,offset_y_val,name_val);
+	INSERT INTO animation_template(offset_x,offset_y,name,x_size,y_size) VALUES(offset_x_val,offset_y_val,name_val,x_size_val,y_size_val);
 	RETURN;
 END;
 $$ LANGUAGE plpgsql;

@@ -56,11 +56,6 @@ sub layer{
 	my ($layer5_x,$layer5_y) = imgsize($layer5);
 	my ($layer6_x,$layer6_y) = imgsize($layer6);
 
-	#This might turn into a function later.  I'm not sure
-#	my $query = "select * from tiles";
-#	$sth = $dbh->prepare($query);
-#	$sth->execute;
-#	$self->stash(tiles => $sth->fetchall_arrayref({}));
 	$self->stash(layer1_x => $layer1_x, layer1_y => $layer1_y);
 	$self->stash(layer2_x => $layer2_x, layer2_y => $layer2_y);
 	$self->stash(layer3_x => $layer3_x, layer3_y => $layer3_y);

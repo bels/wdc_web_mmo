@@ -7,7 +7,7 @@ sub save{
 
 	my $dbh = $self->app->dbh;
 	
-	my ($name,$description,$range,$damage,$cast_time,$dot,$animation) = ($self->param('spell_name'),$self->param('spell_description'),$self->param('range'),$self->param('damage'),$self->param('cast_time'),$self->param('dot'),$self->param('animation'));
+	my ($name,$description,$range,$damage,$cast_time,$dot,$animation) = ($self->param('spell_name'),$self->param('spell_description'),$self->param('range'),$self->param('damage'),$self->param('cast_time'),$self->param('dot'),$self->param('sprite_id'));
 
 	my $rules = {
 		spell_name => {
@@ -46,9 +46,12 @@ sub save{
 	#error.  If it does I let the client know.
 	if($self->validator->validate($post)){
 		if($damage ne ''){ #just checking one of the post params so I know which version of add_spell to call.
-			my $query = "select * from add_spell(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			my $query = "select * from add_spell(?,?,?,?,?,?,?)";
 			my $sth = $dbh->prepare($query);
-			$sth->execute($name,$description,$range,$damage,$cast_time,$dot,$animation);
+			if($dot eq ''){
+				$dot = 'false';
+			}
+			$sth->execute($name,$description,$range,$damage,$dot,$cast_time,$animation);
 		} else {
 			my $query = "select * from add_spell(?,?)";
 			my $sth = $dbh->prepare($query);
@@ -73,9 +76,10 @@ sub spell_mapping_save{
 	my $query = "select * from save_spell_mapping(?,?)";
 	my $sth = $dbh->prepare($query);
 	$sth->execute($spell,$entity);
+	my $name = $sth->fetchrow_hashref;
 	
 	if($dbh->err != 7){
-		$self->flash(success => 'Spell: ' . $spell . ' mapped successfully');
+		$self->flash(success => 'Spell: ' . $name->{'save_spell_mapping'} . ' mapped successfully');
 	} else {
 		$self->flash(error => 'Spell mapping failed.' . $dbh->errstr);
 	}

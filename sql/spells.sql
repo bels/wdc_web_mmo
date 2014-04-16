@@ -24,7 +24,7 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION add_spell(name_val TEXT, description_val TEXT, range_val INTEGER, damage_val INTEGER, dot_val BOOLEAN, cast_time_val REAL,animation_val UUID) RETURNS VOID AS $$
 BEGIN
-	INSERT INTO spell_template(name,description,"range",damage,damage_over_time,cast_time,animation) values(name_val,description_val,range_val,damage_val,dot_val,cast_time,animation_val);
+	INSERT INTO spell_template(name,description,"range",damage,damage_over_time,cast_time,animation) values(name_val,description_val,range_val,damage_val,dot_val,cast_time_val,animation_val);
 	RETURN;
 END;
 $$ LANGUAGE plpgsql;
@@ -95,10 +95,12 @@ $$ LANGUAGE plpgsql;
 
 -------------------------------------------------------
 
-CREATE OR REPLACE FUNCTION save_spell_mapping(spell_id_val UUID, entity_id_val UUID) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION save_spell_mapping(spell_id_val UUID, entity_id_val UUID) RETURNS TEXT AS $$
+DECLARE
+	name_val TEXT;
 BEGIN
 	INSERT INTO spell_mapping (entity_id, spell_id) VALUES (entity_id_val,spell_id_val);
-
-	RETURN;
+	SELECT name INTO name_val FROM spell_template WHERE id = spell_id_val;
+	RETURN name_val;
 END;
 $$ LANGUAGE plpgsql;
