@@ -2,6 +2,7 @@ $(document).ready(function(){
 	var active_character;
 	$('.select_character_div').click(function(){
 		active_character = $(this).find('.character_id').attr('id');
+		$(this).addClass('highlight');
 	});
 	
 	$('#play_button').click(function(){
