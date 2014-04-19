@@ -6,8 +6,8 @@ sub save{
 	my $self = shift;
 
 	my $dbh = $self->app->dbh;
-	
-	my ($name,$description,$range,$damage,$cast_time,$dot,$animation) = ($self->param('spell_name'),$self->param('spell_description'),$self->param('range'),$self->param('damage'),$self->param('cast_time'),$self->param('dot'),$self->param('sprite_id'));
+
+	my ($name,$description,$range,$damage,$cast_time,$dot,$animation) = ($self->param('spell_name'),$self->param('spell_description'),$self->param('range'),$self->param('damage'),$self->param('cast_time'),$self->param('dot') || 'false',$self->param('sprite_id'));
 
 	my $rules = {
 		spell_name => {
@@ -48,9 +48,6 @@ sub save{
 		if($damage ne ''){ #just checking one of the post params so I know which version of add_spell to call.
 			my $query = "select * from add_spell(?,?,?,?,?,?,?)";
 			my $sth = $dbh->prepare($query);
-			if($dot eq ''){
-				$dot = 'false';
-			}
 			$sth->execute($name,$description,$range,$damage,$dot,$cast_time,$animation);
 		} else {
 			my $query = "select * from add_spell(?,?)";

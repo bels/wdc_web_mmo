@@ -43,7 +43,7 @@
 				%= label_for animation => 'Animation', class => 'control-label'
 				<br />
 				% foreach my $animation (@{$animations}){
-					<div class="sprite_tile tile available_thumbnail animation" style="background-position: -<%= $animation->{'offset_x'} %>px <%= $animation->{'offset_y'} %>px; height: <%= $animation->{'y_size'} %>px; width: <%= $animation->{'x_size'} %>px; float:left;" animation_id="<%= $animation->{'id'} %>"></div>
+					<div class="sprite_tile tile available_thumbnail animation" style="background-position: -<%= $animation->{'offset_x'} %>px <%= $animation->{'offset_y'} %>px; height: <%= $animation->{'y_size'} %>px; width: <%= $animation->{'x_size'} %>px; float:left;" sprite_id="<%= $animation->{'id'} %>"></div>
 				% }
 				<br />
 				<br />

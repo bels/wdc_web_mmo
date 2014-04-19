@@ -100,42 +100,42 @@
 				<div class="tab-content">
 					<div id="layer1" class="tab-pane active">
 						% foreach my $layer (@{$layer1}){
-							<div class="well col-sm-2 layer1" lid="<%= $layer->{'id'} %>">
+							<div class="well col-sm-2 layer1 map_to_layer" lid="<%= $layer->{'id'} %>">
 								%= $layer->{'name'}
 							</div>
 						% }
 					</div>
 					<div id="layer2" class="tab-pane">
 						% foreach my $layer (@{$layer2}){
-							<div class="well col-sm-2 layer2" lid="<%= $layer->{'id'} %>">
+							<div class="well col-sm-2 layer2 map_to_layer" lid="<%= $layer->{'id'} %>">
 								%= $layer->{'name'}
 							</div>
 						% }
 					</div>
 					<div id="layer3" class="tab-pane">
 						% foreach my $layer (@{$layer3}){
-							<div class="well col-sm-2 layer3" lid="<%= $layer->{'id'} %>">
+							<div class="well col-sm-2 layer3 map_to_layer" lid="<%= $layer->{'id'} %>">
 								%= $layer->{'name'}
 							</div>
 						% }
 					</div>
 					<div id="layer4" class="tab-pane">
 						% foreach my $layer (@{$layer4}){
-							<div class="well col-sm-2  layer4" lid="<%= $layer->{'id'} %>">
+							<div class="well col-sm-2  layer4 map_to_layer" lid="<%= $layer->{'id'} %>">
 								%= $layer->{'name'}
 							</div>
 						% }
 					</div>
 					<div id="layer5" class="tab-pane">
 						% foreach my $layer (@{$layer5}){
-							<div class="well col-sm-2 layer5" lid="<%= $layer->{'id'} %>">
+							<div class="well col-sm-2 layer5 map_to_layer" lid="<%= $layer->{'id'} %>">
 								%= $layer->{'name'}
 							</div>
 						% }
 					</div>
 					<div id="layer6" class="tab-pane">
 						% foreach my $layer (@{$layer6}){
-							<div class="well col-sm-2 layer6" lid="<%= $layer->{'id'} %>">
+							<div class="well col-sm-2 layer6 map_to_layer" lid="<%= $layer->{'id'} %>">
 								%= $layer->{'name'}
 							</div>
 						% }

@@ -12,7 +12,7 @@ $(document).ready(function(){
 	var previous_active;
 	$('#close_layers').click(function(e){
 		e.preventDefault();
-		previous_active.children('a').tab('show')
+		previous_active.children('a').tab('show');
 		$(this).parent().removeClass('active');
 		layer_tiles_pane.removeClass('show');
 		layer_tiles_pane.addClass('hidden');
@@ -67,26 +67,24 @@ $(document).ready(function(){
 	
 	$('.layer1').click(function(){
 		map_layer1 = $(this).attr('lid');
-		$(this).addClass('highlight');
 	});
 	$('.layer2').click(function(){
 		map_layer2 = $(this).attr('lid');
-		$(this).addClass('highlight');
 	});
 	$('.layer3').click(function(){
 		map_layer3 = $(this).attr('lid');
-		$(this).addClass('highlight');
 	});
 	$('.layer4').click(function(){
 		map_layer4 = $(this).attr('lid');
-		$(this).addClass('highlight');
 	});
 	$('.layer5').click(function(){
 		map_layer5 = $(this).attr('lid');
-		$(this).addClass('highlight');
 	});
 	$('.layer6').click(function(){
 		map_layer6 = $(this).attr('lid');
+	});
+
+	$('.map_to_layer').click(function(){
 		$(this).addClass('highlight');
 	});
 	

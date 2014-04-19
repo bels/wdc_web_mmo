@@ -17,6 +17,7 @@ $(document).ready(function(){
 				'distance': '+=' + tile_size_x
 			};
 			window.UI.move(data);
+			ws.send(JSON.stringify({'data': data, 'action': 'move'}));
 		}
 		if(event.which == 37){
 			var data = {
@@ -25,6 +26,7 @@ $(document).ready(function(){
 				'distance': '-=' + tile_size_x
 			};
 			window.UI.move(data);
+			ws.send(JSON.stringify({'data': data, 'action': 'move'}));
 		}
 		if(event.which == 40){
 			var data = {
@@ -33,6 +35,7 @@ $(document).ready(function(){
 				'distance': '+=' + tile_size_y
 			};
 			window.UI.move(data);
+			ws.send(JSON.stringify({'data': data, 'action': 'move'}));
 		}
 		if(event.which == 38){
 			var data = {
@@ -41,6 +44,7 @@ $(document).ready(function(){
 				'distance': '-=' + tile_size_y
 			};
 			window.UI.move(data);
+			ws.send(JSON.stringify({'data': data, 'action': 'move'}));
 		}
 	});
 	

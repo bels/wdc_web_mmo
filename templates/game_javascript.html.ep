@@ -71,6 +71,12 @@
 									'spell_entry_id':  s1.concat(s2)
 								};
 								UI.animateAction(info);
+								var server_data = {
+									'damage': window[Dispatcher.Entities[i]].abilities[counter]].get_damage(),
+									'attacker': window[Dispatcher.Entities[i]].get_id(),
+									'target': data.Entity.get_id()
+								};
+								ws.send(JSON.stringify({'data': server_data, 'action': 'attack'}));
 							}
 						}
 					}
@@ -117,7 +123,6 @@
 							}
 						});
 					}
-					ws.send(JSON.stringify({'data': data, 'action': 'move'}));
 				}
 			},
 			collision: function(data){
@@ -211,6 +216,9 @@
 					this.animation_offset_y = y;
 					this.animation_offset_x = x;
 				};
+				this.get_damage = function(){
+					return this.damage;
+				}
 			};
 
 			return ab;

@@ -5,8 +5,7 @@ use Mojo::Base 'Mojolicious::Controller';
 sub dispatch{
 	my $self = shift;
 	my $tx = $self->tx;
-	
-	Mojo::IOLoop->stream($tx)->timeout(300);
+
 	my $action = {
 		'move' => sub {
 			my ($self,$data) = @_;
@@ -83,6 +82,18 @@ sub _check_collision {
 	return $flag;
 }
 
+sub _spawn_entity {
+	#server side spawning of entities. ie. respawning a mob after being killed, placing a entity by some form of ai, etc...
+	my ($self, $data) = @_;
+
+	my $dbh = $self->app->dbh;
+	my $query = "select spawn_entity(?,?,?,?,?,?,?)"
+	my $sth = $dbh->prepare($query);
+	$sth->execute($data->{'type'},$data->{'entity_id'},$data->{'spawn_location_id'},$data->{'x'},$data->{'y'},$data->{'tile_id'},$data->{'mid'});
+	
+	return;
+}
+
 sub _json_from_any {
 	my %data = @_;
 	
@@ -99,4 +110,8 @@ sub _move{
 	$sth->execute($data->{'Entity'}->{'id'},$data->{'Entity'}->{'x'},$data->{'Entity'}->{'y'},$data->{'Entity'}->{'current_map'},$data->{'Entity'}->{'current_tile'});
 }
 
+sub _attack{
+	my ($self,$data) = @_;
+
+}
 1;

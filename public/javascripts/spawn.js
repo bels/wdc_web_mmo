@@ -11,11 +11,13 @@ $(document).ready(function(){
 	$('.game_tile').click(function(){
 		var tile_id = $(this).attr('tile_id');
 		Positions[tile_id] = {};
-		Positions[tile_id]['x'] = $(this).attr('x');
+		Positions[tile_id].x = $(this).attr('x');
 		Positions[tile_id].y = $(this).attr('y');
 		Positions[tile_id].type = last_creature.object_type;
 		Positions[tile_id].id = last_creature.uuid;
 		Positions[tile_id].map_id = $('#map').attr('map_id');
+		console.log($(this).attr('tile_id'));
+		console.log(tile_id);
 		$('#character').find("div[tile_id='" + $(this).attr('tile_id') +"']").css('background',last_creature.background_image).css('background-position',last_creature.background_position);
 	});
 

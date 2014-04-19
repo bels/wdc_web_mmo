@@ -44,7 +44,7 @@ sub save{
 	foreach my $name (@params){
 		$post->{$name} = $self->param($name);
 	}
-	warn $sprite_id;
+
 	#If the post data passes the validator it will try to create the creature. Then I check the database error code to make sure the creature creation didn't
 	#error.  If it does I let the client know.
 	if($self->validator->validate($post)){
