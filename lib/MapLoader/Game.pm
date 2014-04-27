@@ -25,7 +25,22 @@ sub play_game {
 	$query = "select * from get_character_position_data(?)";
 	$sth = $dbh->prepare($query);
 	$sth->execute($map_id);
-	$self->stash(characters => $sth->fetchall_arrayref({}));
+	my $characters = $sth->fetchall_arrayref({});
+	$self->stash(characters => $characters);
+	foreach (%{$characters}){
+		my $event_id = _register_event('spawn','character');
+		my $data = {
+			'type' => 'character',
+			'entity_id' => $_->{'character_id'},
+			'spawn_location_id' => $_->{'id'},
+			'x' => $_->{'x'},
+			'y' => $_->{'y'},
+			'tile_id' => $_->{'tile_id'},
+			'mid' => $map_id,
+			'event_id' => $event_id
+		}
+	    _spawn_entity($self,$data);
+	}
 	$query = "select * from get_collision_data(?) AS collision";
 	$sth = $dbh->prepare($query);
 	$sth->execute($map_id);
@@ -33,11 +48,41 @@ sub play_game {
 	$query = "select * from get_npc_position_data(?)";
 	$sth = $dbh->prepare($query);
 	$sth->execute($map_id);
-	$self->stash(npcs => $sth->fetchall_arrayref({}));
+	my $npcs = $sth->fetchall_arrayref({});
+	$self->stash(npcs => $npcs);
+	foreach (%{$npcs}){
+	    my $event_id = _register_event('spawn','npc');
+		my $data = {
+			'type' => 'npc',
+			'entity_id' => $_->{'npc_id'},
+			'spawn_location_id' => $_->{'id'},
+			'x' => $_->{'x'},
+			'y' => $_->{'y'},
+			'tile_id' => $_->{'tile_id'},
+			'mid' => $map_id,
+			'event_id' => $event_id
+		}
+	    _spawn_entity($self,$data);
+	}
 	$query = "select * from get_creature_position_data(?)";
 	$sth = $dbh->prepare($query);
 	$sth->execute($map_id);
-	$self->stash(creatures => $sth->fetchall_arrayref({}));
+	my $creatures = $sth->fetchall_arrayref({});
+	$self->stash(creatures => $creatures);
+	foreach (%{$creatures}){
+	    my $event_id = _register_event('spawn','creature');
+		my $data = {
+			'type' => 'creature',
+			'entity_id' => $_->{'creature_id'},
+			'spawn_location_id' => $_->{'id'},
+			'x' => $_->{'x'},
+			'y' => $_->{'y'},
+			'tile_id' => $_->{'tile_id'},
+			'mid' => $map_id,
+			'event_id' => $event_id
+		}
+	    _spawn_entity($self,$data);
+	}
 	$query = "select * from get_spells_for_map(?)";
 	$sth = $dbh->prepare($query);
 	$sth->execute($map_id);
@@ -54,9 +99,10 @@ sub play_game {
 	$self->stash(spell_mappings => $new_spells);
 	$self->stash(map_id => $map_id);
 	
+
 	$self->render(
 		template => 'map',
-		javascripts => ['games.js'],
+		javascripts => ['uuid.js','games.js'],
 		styles => ['game.css']
 	);
 }

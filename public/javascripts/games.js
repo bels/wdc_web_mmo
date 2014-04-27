@@ -14,8 +14,10 @@ $(document).ready(function(){
 			var data = {
 				'Entity': player,
 				'direction': 'right',
-				'distance': '+=' + tile_size_x
+				'distance': '+=' + tile_size_x,
+				'event_id': UUID.generate()
 			};
+			Dispatcher.registerEvent({'event_id': data.event_id, 'action': 'move'});
 			window.UI.move(data);
 			ws.send(JSON.stringify({'data': data, 'action': 'move'}));
 		}
@@ -23,8 +25,10 @@ $(document).ready(function(){
 			var data = {
 				'Entity': player,
 				'direction': 'left',
-				'distance': '-=' + tile_size_x
+				'distance': '-=' + tile_size_x,
+			        'event_id': UUID.generate()
 			};
+			Dispatcher.registerEvent({'event_id': data.event_id, 'action': 'move'});
 			window.UI.move(data);
 			ws.send(JSON.stringify({'data': data, 'action': 'move'}));
 		}
@@ -32,8 +36,10 @@ $(document).ready(function(){
 			var data = {
 				'Entity': player,
 				'direction': 'down',
-				'distance': '+=' + tile_size_y
+				'distance': '+=' + tile_size_y,
+				'event_id': UUID.generate()
 			};
+			Dispatcher.registerEvent({'event_id': data.event_id, 'action': 'move'});
 			window.UI.move(data);
 			ws.send(JSON.stringify({'data': data, 'action': 'move'}));
 		}
@@ -41,8 +47,10 @@ $(document).ready(function(){
 			var data = {
 				'Entity': player,
 				'direction': 'up',
-				'distance': '-=' + tile_size_y
+				'distance': '-=' + tile_size_y,
+				'event_id': UUID.generate()
 			};
+			Dispatcher.registerEvent({'event_id': data.event_id, 'action': 'move'});
 			window.UI.move(data);
 			ws.send(JSON.stringify({'data': data, 'action': 'move'}));
 		}

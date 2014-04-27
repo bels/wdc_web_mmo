@@ -6,7 +6,9 @@ CREATE TABLE live_entities(
 	x INTEGER NOT NULL,
 	y INTEGER NOT NULL,
 	spawn_location_id uuid NOT NULL,
-	type TEXT NOT NULL
+	type TEXT NOT NULL,
+	hitpoints INTEGER NOT NULL,
+	mana INTEGER NOT NULL
 );
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON live_entities TO map;
