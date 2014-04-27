@@ -1,6 +1,5 @@
 package MapLoader::Websockets;
 use Mojo::Base 'Mojolicious::Controller';
-use Data::UUID;
 
 # TODO: Add all kinds of validation and error checking. srsly.
 sub dispatch{
@@ -98,55 +97,11 @@ sub _check_collision {
 	return $flag;
 }
 
-sub _spawn_entity {
-	#server side spawning of entities. ie. respawning a mob after being killed, placing a entity by some form of ai, etc...
-	my ($self, $data) = @_;
-
-	my $dbh = $self->app->dbh;
-	my $query = "select spawn_entity(?,?,?,?,?,?,?)"
-	my $sth = $dbh->prepare($query);
-	$sth->execute($data->{'type'},$data->{'entity_id'},$data->{'spawn_location_id'},$data->{'x'},$data->{'y'},$data->{'tile_id'},$data->{'mid'});
-	
-	_unregister_event($data->{'event_id'});
-	return;
-}
-
 sub _json_from_any {
 	my %data = @_;
 	
 	my $json = Mojo::JSON->new;
 	return $json->encode({%data});
-}
-
-sub _check_for_event{
-       my ($self,$data) = @_;
-       
-       foreach (@{$self->session->{'events'}->{'order'}}){
-	  if($_ eq $data){
-	       return 1;
-	  }
-       }
-       return 0;
-}
-
-sub _register_event {
-	my ($self,$data) = @_;
-	
-	push(@{$self->session->{'events'}->{'order'}}, $data->{'event_id'});
-	$self->session->{'events'}->{$data->{'event_id'}} = $data;
-	
-	return;
-}
-
-sub _unregister_event{
-	my ($self,$data) = @_;
-	
-	for(my $i = 0; $i <= scalar(@{$self->session->{'events'}->{'order'}}); $i++){
-	       splice(@{$self->session->{'events'}->{'order'}},$i,1);
-	}
-	delete($self->session->{'events'}->{$data});
-	
-	return;
 }
 
 sub _move{

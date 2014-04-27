@@ -27,8 +27,7 @@ sub play_game {
 	$sth->execute($map_id);
 	my $characters = $sth->fetchall_arrayref({});
 	$self->stash(characters => $characters);
-	foreach (%{$characters}){
-		my $event_id = _register_event('spawn','character');
+	foreach (@{$characters}){
 		my $data = {
 			'type' => 'character',
 			'entity_id' => $_->{'character_id'},
@@ -37,9 +36,9 @@ sub play_game {
 			'y' => $_->{'y'},
 			'tile_id' => $_->{'tile_id'},
 			'mid' => $map_id,
-			'event_id' => $event_id
-		}
-	    _spawn_entity($self,$data);
+		};
+		$data = $self->create_event($data);
+	        _spawn_entity($self,$data);
 	}
 	$query = "select * from get_collision_data(?) AS collision";
 	$sth = $dbh->prepare($query);
@@ -50,8 +49,7 @@ sub play_game {
 	$sth->execute($map_id);
 	my $npcs = $sth->fetchall_arrayref({});
 	$self->stash(npcs => $npcs);
-	foreach (%{$npcs}){
-	    my $event_id = _register_event('spawn','npc');
+	foreach (@{$npcs}){
 		my $data = {
 			'type' => 'npc',
 			'entity_id' => $_->{'npc_id'},
@@ -60,17 +58,16 @@ sub play_game {
 			'y' => $_->{'y'},
 			'tile_id' => $_->{'tile_id'},
 			'mid' => $map_id,
-			'event_id' => $event_id
-		}
-	    _spawn_entity($self,$data);
+		};
+		$data = $self->create_event($data);
+	        _spawn_entity($self,$data);
 	}
 	$query = "select * from get_creature_position_data(?)";
 	$sth = $dbh->prepare($query);
 	$sth->execute($map_id);
 	my $creatures = $sth->fetchall_arrayref({});
 	$self->stash(creatures => $creatures);
-	foreach (%{$creatures}){
-	    my $event_id = _register_event('spawn','creature');
+	foreach (@{$creatures}){
 		my $data = {
 			'type' => 'creature',
 			'entity_id' => $_->{'creature_id'},
@@ -79,9 +76,9 @@ sub play_game {
 			'y' => $_->{'y'},
 			'tile_id' => $_->{'tile_id'},
 			'mid' => $map_id,
-			'event_id' => $event_id
-		}
-	    _spawn_entity($self,$data);
+		};
+		$data = $self->create_event($data);
+	        _spawn_entity($self,$data);
 	}
 	$query = "select * from get_spells_for_map(?)";
 	$sth = $dbh->prepare($query);
@@ -131,6 +128,19 @@ sub select_character {
 		javascripts => ['select_character.js'],
 		styles => []
 	);
+}
+
+sub _spawn_entity {
+	#server side spawning of entities. ie. respawning a mob after being killed, placing a entity by some form of ai, etc...
+	my ($self, $data) = @_;
+
+	my $dbh = $self->app->dbh;
+	my $query = "select spawn_entity(?,?,?,?,?,?,?)";
+	my $sth = $dbh->prepare($query);
+	$sth->execute($data->{'type'},$data->{'entity_id'},$data->{'spawn_location_id'},$data->{'x'},$data->{'y'},$data->{'tile_id'},$data->{'mid'});
+	
+	$self->unregister_event($data->{'event_id'});
+	return;
 }
 
 1;
