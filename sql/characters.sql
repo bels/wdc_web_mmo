@@ -1,6 +1,27 @@
 -- Tables
 
-CREATE TABLE characters (id uuid PRIMARY KEY DEFAULT uuid_generate_v4(), pid uuid /*references players (id)*/, name TEXT NOT NULL, avatar uuid, sprite_id uuid references sprites(id) NOT NULL, "online" BOOLEAN DEFAULT FALSE);
+CREATE TABLE characters (
+	id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+	pid uuid /*references players (id)*/, 
+	name TEXT NOT NULL, 
+	avatar uuid, 
+	sprite_id uuid references sprites(id) NOT NULL, 
+	"online" BOOLEAN DEFAULT FALSE,
+	current_hitpoints BIGINT,
+	current_mana BIGINT,
+	max_hitpoints BIGINT,
+	max_mana BIGINT,
+	strength INTEGER DEFAULT 1,
+	agility INTEGER DEFAULT 1,
+	dexterity INTEGER DEFAULT 1,
+	stamina INTEGER DEFAULT 1,
+	intelligence INTEGER DEFAULT 1,
+	wisdom INTEGER DEFAULT 1,
+	vitality INTEGER DEFAULT 1,
+	luck INTEGER DEFAULT 1,
+	current_level INTEGER DEFAULT 1,
+	starting_level INTEGER DEFAULT 1
+);
 CREATE TABLE character_location (id uuid PRIMARY KEY DEFAULT uuid_generate_v4(), character_id uuid REFERENCES characters(id), x INTEGER NOT NULL DEFAULT 1, y INTEGER NOT NULL DEFAULT 1, "mid" uuid references maps(id), tile_id INTEGER );
 
 -- Permissions
@@ -9,7 +30,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON characters TO map;
 
 -- Types
 
-CREATE TYPE character_position_data AS (id uuid, x INTEGER, y INTEGER, sprite_path TEXT, offset_x INTEGER, offset_y INTEGER, tile_id INTEGER  );
+CREATE TYPE character_position_data AS (id uuid, character_id uuid, x INTEGER, y INTEGER, sprite_path TEXT, offset_x INTEGER, offset_y INTEGER, tile_id INTEGER  );
 CREATE TYPE character_data AS (id uuid , name TEXT, "path" TEXT, offset_x TEXT, offset_y TEXT);
 
 -- Comments
@@ -54,7 +75,7 @@ $$ LANGUAGE plpgsql;
 
 -----------------------------------------------------------------------------------------
 
-CREATE OR REPLACE FUNCTION set_character_location(character_val uuid, x_val INTEGER, y_val INTEGER, map_id_VAL uuid, tile_id_val uuid) RETURNS VOID AS $$
+CREATE OR REPLACE FUNCTION set_character_location(character_val uuid, x_val INTEGER, y_val INTEGER, map_id_VAL uuid, tile_id_val INTEGER) RETURNS VOID AS $$
 BEGIN
 	--this should update any existing entry in character locations or create one if one does not exist.
 	UPDATE character_location SET 
@@ -96,6 +117,7 @@ BEGIN
 		SELECT characters.id FROM characters JOIN character_location ON characters.id = character_location.character_id WHERE "mid" = mid_val AND "online" IS TRUE
 	LOOP
 		SELECT j,
+		(SELECT character_id FROM character_location WHERE character_id = j AND "mid" = mid_val),
 		(SELECT x FROM character_location WHERE character_id = j AND "mid" = mid_val),
 		(SELECT y FROM character_location WHERE character_id = j AND "mid" = mid_val), 
 		(SELECT "path" FROM sprites WHERE id = (SELECT sprite_id FROM characters WHERE id = (SELECT character_id FROM character_location WHERE character_location.character_id = j))),
@@ -122,5 +144,14 @@ BEGIN
 		RETURN NEXT cd;
 	END LOOP;
 	RETURN;
+END;
+$$ LANGUAGE plpgsql;
+
+-----------------------------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION get_character_info(char_val uuid) RETURNS SETOF characters AS $$
+BEGIN
+	RETURN QUERY
+		SELECT * FROM characters WHERE id = char_val;
 END;
 $$ LANGUAGE plpgsql;

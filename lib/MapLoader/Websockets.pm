@@ -10,16 +10,25 @@ sub dispatch{
 		'move' => sub {
 			my ($self,$data) = @_;
 			# check collision
-			# success? Update the database
-			# success? Inform the client
 			
 			my $collision = _check_collision($self, $data);
 
-			my $return_data = {'collision' => $collision,'event_id' => $data->{'event_id'},'finished' => 1};
-			_send_message($self, 'data' => $return_data);
-
 			if(!$collision){
 				_move($self,$data);
+				my $return_data = {
+					'direction' => $data->{'direction'},
+					'collision' => $collision,
+					'event_id' => $data->{'event_id'},
+					'finished' => 1,
+					'action' => 'move',
+					'distance' => $data->{'distance'},
+					'x' => $data->{'x'},
+					'y' => $data->{'y'},
+					'Entity' => $data->{'Entity'},
+					'id' => $data->{'id'},
+					'type' => $data->{'type'}
+				};
+				_send_message($self, data => $return_data);
 			}
 
 			return;
@@ -53,8 +62,8 @@ sub dispatch{
 			# abort if we could not unjsonify the message?
 
 			$message->{'data'}->{'tx'} = $tx;
-			if(!_check_for_event){
-			      _register_event($message->{'data'}->{'event_id'});
+			if(!$self->check_for_event){
+			      $self->create_event($message->{'data'});
 			}
 			&{$action->{$message->{'action'}}}($self, $message->{'data'});
 			
@@ -107,12 +116,21 @@ sub _json_from_any {
 sub _move{
 	my ($self,$data) = @_;
 
-	my $dbh = $self->app->dbh;
-	my $query = "select * from set_character_location(?,?,?,?,?)";
-	my $sth = $dbh->prepare($query);
-	$sth->execute($data->{'Entity'}->{'id'},$data->{'Entity'}->{'x'},$data->{'Entity'}->{'y'},$data->{'Entity'}->{'current_map'},$data->{'Entity'}->{'current_tile'});
 	
-	_unregister_event($data->{'event_id'};
+	my $dbh = $self->app->dbh;
+	my $query;
+	if($data->{'type'} eq 'character'){
+		$query = "select * from set_character_location(?,?,?,?,?)";
+	} elsif($data->{'type'} eq 'npc'){
+		$query = "select * from set_npc_location(?,?,?,?,?)";
+	} elsif($data->{'type'} eq 'creature'){
+		$query = "select * from set_creature_location(?,?,?,?,?)";
+	}
+
+	my $sth = $dbh->prepare($query);
+	$sth->execute($data->{'id'},$data->{'x'},$data->{'y'},$data->{'current_map'},$data->{'current_tile'});
+	
+	$self->unregister_event($data->{'event_id'});
 	return;
 }
 

@@ -19,10 +19,17 @@
 		}
 		
 		ws.onmessage = function(e){
-			var server_message = e.data;
-			console.log(server_message);
+			var server_message = JSON.parse(e.data);
+			switch(server_message.data.action){
+				case "move":
+					UI.move(server_message.data);
+				case "remove_entity":
+					break;
+				default:
+					console.log('Could not handle an action from the server');
+			}
 			if(server_message.finished === 1){
-			      Dispatcher.unregisterEvent(e.data);
+			    Dispatcher.unregisterEvent(e.data);
 			}
 			//Dispatcher.executeEvents();
 		}
@@ -39,7 +46,7 @@
 			unregisterEvent: function(data){
 				this.EventQueue.shift()
 			},
-			executeEvents: function(){
+			executeEvents: function(data){
 				for(var i = 0; i < Dispatcher.EventQueue.length; i++){
 					switch(Dispatcher.EventQueue[i]){
 						case "move":
@@ -59,11 +66,11 @@
 			execute_abilities: function(data){
 				//this function will loop through all registered entities and check for abilities/actions that should affect the current entity
 				var object1 = {
-					'x': data.Entity.get_x(),
-					'y': data.Entity.get_y()
+					'x': window[data].get_x(),
+					'y': window[data].get_y()
 				};
 				for(var i=0; i < Dispatcher.Entities.length; i++){
-					if(window[Dispatcher.Entities[i]].get_name() !== data.Entity.get_name()){
+					if(window[Dispatcher.Entities[i]].get_name() !== data){
 						var object2 = {
 							'x': window[Dispatcher.Entities[i]].get_x(),
 							'y': window[Dispatcher.Entities[i]].get_y()
@@ -76,14 +83,14 @@
 								var direction = '';
 								var part1 = 'north';
 								var part2 = 'west';
-								if(data.Entity.get_x() > window[Dispatcher.Entities[i]].get_x()){
+								if(window[data].get_x() > window[Dispatcher.Entities[i]].get_x()){
 									part2 = 'east';
-								} else if(data.Entity.get_x() === window[Dispatcher.Entities[i]].get_x()){
+								} else if(window[data].get_x() === window[Dispatcher.Entities[i]].get_x()){
 									part2 = '';
 								}
-								if(data.Entity.get_y() < window[Dispatcher.Entities[i]].get_y()){
+								if(window[data].get_y() < window[Dispatcher.Entities[i]].get_y()){
 									part1 = 'south';
-								} else if(data.Entity.get_y() === window[Dispatcher.Entities[i]].get_y){
+								} else if(window[data].get_y() === window[Dispatcher.Entities[i]].get_y){
 									part1 = '';
 								}
 								direction = part1 + part2;
@@ -91,7 +98,7 @@
 								var s2 = window[Dispatcher.Entities[i]].get_name();
 								var info = {
 									'distance': distance,
-									'target': data.Entity.get_dom(),
+									'target': window[data].get_dom(),
 									'attacker': window[Dispatcher.Entities[i]].get_dom(),
 									'direction': direction,
 									'animation_offset_x': window[window[Dispatcher.Entities[i]].abilities[counter]].animation_offset_x,
@@ -100,9 +107,11 @@
 								};
 								UI.animateAction(info);
 								var server_data = {
-									'attack_id': window[Dispatcher.Entities[i]].abilities[counter]].get_id(),
-									'target': data.Entity.get_id()
+									'attack_id': window[window[Dispatcher.Entities[i]].abilities[counter]].get_id(),
+									'target': window[data].get_id(),
+									'event_id': UUID.generate()
 								};
+								Dispatcher.registerEvent(server_data.event_id);
 								ws.send(JSON.stringify({'data': server_data, 'action': 'attack'}));
 							}
 						}
@@ -116,22 +125,22 @@
 			
 			},
 			move: function(data){//jqO = jquery Object
-				var jqO = data.Entity.get_dom();
+				var jqO = window[data.Entity].get_dom();
 				Dispatcher.registerEvent(data.event_id);
-				if(!UI.collision(data)){
+				if(!UI.collision(jqO)){
 					if(data.direction === 'right' || data.direction === 'left'){
 						jqO.animate({
 							left: data.distance
 						}, 500, function(){
-							data.Entity.set_offset(jqO.offset());
+							window[data.Entity].set_offset(jqO.offset());
 							if(data.direction === 'right'){
-								data.Entity.set_x(data.Entity.get_x() + 1);
-								data.Entity.increment_tile(1);
-								Dispatcher.execute_abilities(data);
+								window[data.Entity].set_x(window[data.Entity].get_x() + 1);
+								window[data.Entity].increment_tile(1);
+								Dispatcher.execute_abilities(data.Entity);
 							} else {
-								data.Entity.set_x(data.Entity.get_x() - 1);
-								data.Entity.increment_tile(-1);
-								Dispatcher.execute_abilities(data);
+								window[data.Entity].set_x(window[data.Entity].get_x() - 1);
+								window[data.Entity].increment_tile(-1);
+								Dispatcher.execute_abilities(data.Entity);
 							}
 						});
 					}
@@ -139,15 +148,15 @@
 						jqO.animate({
 							top: data.distance
 						}, 500, function(){
-							data.Entity.set_offset(jqO.offset());
+							window[data.Entity].set_offset(jqO.offset());
 							if(data.direction === 'up'){
-								data.Entity.set_y(data.Entity.get_y() + 1);
-								data.Entity.increment_tile(-tiles_x);
-								Dispatcher.execute_abilities(data);
+								window[data.Entity].set_y(window[data.Entity].get_y() - 1);
+								window[data.Entity].increment_tile(-tiles_x);
+								Dispatcher.execute_abilities(data.Entity);
 							} else {
-								data.Entity.set_y(data.Entity.get_y() - 1);
-								data.Entity.increment_tile(tiles_x);
-								Dispatcher.execute_abilities(data);
+								window[data.Entity].set_y(window[data.Entity].get_y() + 1);
+								window[data.Entity].increment_tile(tiles_x);
+								Dispatcher.execute_abilities(data.Entity);
 							}
 						});
 					}
@@ -156,28 +165,28 @@
 			},
 			collision: function(data){
 				if(data.direction === 'up'){
-					if(!collision_data[data.Entity.get_current_tile() - tiles_x] && data.Entity.get_offset_y() - 1 > map_offset.top){
+					if(!collision_data[data.get_current_tile() - tiles_x] && data.get_offset_y() - 1 > map_offset.top){
 						return false;
 					} else {
 						return true;
 					}
 				}
 				if(data.direction === 'down'){
-					if(!collision_data[data.Entity.get_current_tile() + tiles_x] && (data.Entity.get_offset_y() + tile_size_y) + 1 < map_offset.top + (tiles_y * tile_size_y)){
+					if(!collision_data[data.get_current_tile() + tiles_x] && (data.get_offset_y() + tile_size_y) + 1 < map_offset.top + (tiles_y * tile_size_y)){
 						return false;
 					} else {
 						return true;
 					}
 				}
 				if(data.direction === 'left'){
-					if(!collision_data[data.Entity.get_current_tile() - 1] && (data.Entity.get_offset_x() - 1) > map_offset.left){
+					if(!collision_data[data.get_current_tile() - 1] && (data.get_offset_x() - 1) > map_offset.left){
 						return false;
 					} else {
 						return true;
 					}
 				}
 				if(data.direction === 'right'){
-					if(!collision_data[data.Entity.get_current_tile() + 1] && (data.Entity.get_offset_x() + tile_size_x) + 1 < map_offset.left + (tiles_x * tile_size_x)){
+					if(!collision_data[data.get_current_tile() + 1] && (data.get_offset_x() + tile_size_x) + 1 < map_offset.left + (tiles_x * tile_size_x)){
 						return false;
 					} else {
 						return true;
@@ -213,6 +222,9 @@
 			check_distance: function(object1,object2){
 				var distance = Math.sqrt(Math.pow((object2.x - object1.x),2) + Math.pow((object2.y - object2.y),2));
 				return Math.abs(distance);
+			},
+			destroy: function(){
+			
 			}
 		};
 

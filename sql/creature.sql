@@ -1,18 +1,19 @@
 CREATE TABLE creature_template (
- id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
- name TEXT NOT NULL,
- description TEXT,
- sprite_id UUID,
- hit_points BIGINT,
- mana BIGINT,
- strength INTEGER DEFAULT 1,
- agility INTEGER DEFAULT 1,
- dexterity INTEGER DEFAULT 1,
- stamina INTEGER DEFAULT 1,
- intelligence INTEGER DEFAULT 1,
- wisdom INTEGER DEFAULT 1,
- vitality INTEGER DEFAULT 1,
- luck INTEGER DEFAULT 1);
+	id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+	name TEXT NOT NULL,
+	description TEXT,
+	sprite_id UUID,
+	hit_points BIGINT,
+	mana BIGINT,
+	strength INTEGER DEFAULT 1,
+	agility INTEGER DEFAULT 1,
+	dexterity INTEGER DEFAULT 1,
+	stamina INTEGER DEFAULT 1,
+	intelligence INTEGER DEFAULT 1,
+	wisdom INTEGER DEFAULT 1,
+	vitality INTEGER DEFAULT 1,
+	luck INTEGER DEFAULT 1
+);
  
 CREATE TABLE creature_location (id uuid PRIMARY KEY DEFAULT uuid_generate_v4(), creature_id UUID REFERENCES creature_template(id), "mid" uuid references maps(id) not null, x INTEGER NOT NULL, y INTEGER NOT NULL, tile_id INTEGER );
 
@@ -34,7 +35,7 @@ COMMENT ON COLUMN creature_template.luck IS 'Increases chance to dodge and criti
 COMMENT ON COLUMN creature_location.tile_id IS 'This id does not reference a certain type of tile that is stored in the database but instead it references the numbered ID on the map';
 
 -- types
-CREATE TYPE creature_data AS (id uuid , x INTEGER, y INTEGER, sprite_path TEXT, offset_x INTEGER, offset_y INTEGER, tile_id INTEGER );
+CREATE TYPE creature_data AS (id uuid , creature_id uuid, x INTEGER, y INTEGER, sprite_path TEXT, offset_x INTEGER, offset_y INTEGER, tile_id INTEGER );
 CREATE TYPE creature_template_data AS (id uuid , name TEXT, sprite_path TEXT, offset_x INTEGER, offset_y INTEGER);
 
 -- functions
@@ -49,6 +50,7 @@ BEGIN
 		SELECT creature_location.id FROM creature_template JOIN creature_location ON creature_template.id = creature_location.creature_id WHERE "mid" = mid_val
 	LOOP
 		SELECT j,
+		(SELECT creature_template.id FROM creature_template JOIN creature_location ON creature_template.id = creature_location.creature_id WHERE creature_location.id = j),
 		(SELECT x FROM creature_location WHERE id = j AND "mid" = mid_val),
 		(SELECT y FROM creature_location WHERE id = j AND "mid" = mid_val), 
 		(SELECT "path" FROM sprites WHERE id = (SELECT sprite_id FROM creature_template WHERE id = (SELECT creature_id FROM creature_location WHERE creature_location.id = j))),

@@ -41,38 +41,42 @@ sub startup {
 	      return 0;
          });
 
-	 $self->helper(register_event => sub {
-	      my ($self,$data) = @_;
+	$self->helper(register_event => sub {
+		my ($self,$data) = @_;
 
-	      push(@{$self->session->{'events'}->{'order'}}, $data->{'event_id'});
-	      $self->session->{'events'}->{$data->{'event_id'}} = $data;
-	
-	      warn 'Registered event: ' . $data->{'event_id'};
-	      return;
-	 });
+		push(@{$self->session->{'events'}->{'order'}}, $data->{'event_id'});
+		$self->session->{'events'}->{$data->{'event_id'}} = $data;
 
-	 $self->helper(unregister_event => sub {
-	      my ($self,$data) = @_;
-	
-	      for(my $i = 0; $i <= scalar(@{$self->session->{'events'}->{'order'}}); $i++){
-		   if($self->session->{'events'}->{'order'}->[$i] eq $data){
-			splice(@{$self->session->{'events'}->{'order'}},$i,1);
-		   }
-	      }
-	      delete($self->session->{'events'}->{$data});
-	      warn 'Unregistered event: ' . $data;
-	      return;
-         });
+		warn 'Registered event: ' . $data->{'event_id'};
+		return;
+	});
+
+	$self->helper(unregister_event => sub {
+		my ($self,$data) = @_;
+
+		for(my $i = 0; $i <= scalar(@{$self->session->{'events'}->{'order'}}); $i++){
+			if($self->session->{'events'}->{'order'}->[$i] eq $data){
+				splice(@{$self->session->{'events'}->{'order'}},$i,1);
+			}
+		}
+		delete($self->session->{'events'}->{$data});
+		warn 'Unregistered event: ' . $data;
+		return;
+	});
          
-         $self->helper(create_event => sub {
-	      my ($self, $data) = @_;
-	      
-	      my $uuid = create_UUID_as_string(UUID_V4);
-	      $data->{'event_id'} = $uuid;
-	      $self->register_event($data);
-	      
-	      return $data;
-         });
+	$self->helper(create_event => sub {
+		my ($self, $data) = @_;
+
+		my $uuid;
+		unless($data->{'event_id'}){ #because there may be an event id assigned to this from the front end
+			$uuid = create_UUID_as_string(UUID_V4);
+			$data->{'event_id'} = $uuid;
+		}
+		
+		$self->register_event($data);
+
+		return $data;
+	});
 	
 	my $validator = Validator->new();
 	$self->helper(validator => sub {return $validator});

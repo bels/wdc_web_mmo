@@ -29,7 +29,7 @@ COMMENT ON COLUMN npc_location."mid" IS 'Map ID';
 COMMENT ON COLUMN npc_location.tile_id IS 'This id does not reference a certain type of tile that is stored in the database but instead it references the numbered ID on the map';
 
 -- types
-CREATE TYPE npc_data AS (id uuid , x INTEGER, y INTEGER, sprite_path TEXT, offset_x INTEGER, offset_y INTEGER, tile_id INTEGER );
+CREATE TYPE npc_data AS (id uuid , npc_id uuid, x INTEGER, y INTEGER, sprite_path TEXT, offset_x INTEGER, offset_y INTEGER, tile_id INTEGER );
 CREATE TYPE npc_template_data AS (id uuid , name TEXT, sprite_path TEXT, offset_x INTEGER, offset_y INTEGER);
 
 -- functions
@@ -44,6 +44,7 @@ BEGIN
 		SELECT npc_location.id FROM npc_template JOIN npc_location ON npc_template.id = npc_location.npc_id WHERE "mid" = mid_val
 	LOOP
 		SELECT j,
+		(SELECT npc_template.id FROM npc_template JOIN npc_location ON npc_template.id = npc_location.npc_id WHERE npc_location.id = j),
 		(SELECT x FROM npc_location WHERE id = j AND "mid" = mid_val),
 		(SELECT y FROM npc_location WHERE id = j AND "mid" = mid_val), 
 		(SELECT "path" FROM sprites WHERE id = (SELECT sprite_id FROM npc_template WHERE id = (SELECT npc_id FROM npc_location WHERE npc_location.id = j))),

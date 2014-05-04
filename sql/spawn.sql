@@ -7,8 +7,8 @@ CREATE TABLE live_entities(
 	y INTEGER NOT NULL,
 	spawn_location_id uuid NOT NULL,
 	type TEXT NOT NULL,
-	hitpoints INTEGER NOT NULL,
-	mana INTEGER NOT NULL
+	hitpoints BIGINT NOT NULL DEFAULT 0,
+	mana BIGINT NOT NULL DEFAULT 0
 );
 
 GRANT SELECT, INSERT, UPDATE, DELETE ON live_entities TO map;
@@ -34,6 +34,22 @@ CREATE OR REPLACE FUNCTION spawn_entity(type_val TEXT, entity_id_val UUID, spawn
 BEGIN
 	-- this function creates a new entity on a map
 	INSERT INTO live_entities("mid", entity_id, tile_id, x,	y, spawn_location_id, type) VALUES(map_id_val,entity_id_val,tile_id_val,x_val,y_val,spawn_location_id_val,type_val);
+	RETURN;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION spawn_entity(type_val TEXT, entity_id_val UUID, spawn_location_id_val UUID, x_val INTEGER, y_val INTEGER, tile_id_val INTEGER, map_id_val UUID, hitpoints_val INTEGER) RETURNS VOID AS $$
+BEGIN
+	-- this function creates a new entity on a map
+	INSERT INTO live_entities("mid", entity_id, tile_id, x,	y, spawn_location_id, type, hitpoints) VALUES(map_id_val,entity_id_val,tile_id_val,x_val,y_val,spawn_location_id_val,type_val, hitpoints_val);
+	RETURN;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION spawn_entity(type_val TEXT, entity_id_val UUID, spawn_location_id_val UUID, x_val INTEGER, y_val INTEGER, tile_id_val INTEGER, map_id_val UUID, hitpoints_val INTEGER, manapoints_val INTEGER) RETURNS VOID AS $$
+BEGIN
+	-- this function creates a new entity on a map
+	INSERT INTO live_entities("mid", entity_id, tile_id, x,	y, spawn_location_id, type, hitpoints, manapoints) VALUES(map_id_val,entity_id_val,tile_id_val,x_val,y_val,spawn_location_id_val,type_val, hitpoints_val, manapoints_val);
 	RETURN;
 END;
 $$ LANGUAGE plpgsql;
