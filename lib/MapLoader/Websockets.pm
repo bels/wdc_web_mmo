@@ -41,8 +41,19 @@ sub dispatch{
 		},
 		'attack' => sub{
 		    my ($self,$data) = @_;
-		    
-		    _attack($self,$data);
+
+		    my $hp = _attack($self,$data);
+
+			my $return_data;
+
+			if($hp <= 0){
+				$return_data = {
+					'action' => 'destroy',
+					'Entity' => $data->{'target'}
+				};
+				_send_message($self, data => $return_data);
+			}
+			
 		    return;
 		},
 		'spawn' => sub{
@@ -140,8 +151,9 @@ sub _attack{
 	my $dbh = $self->app->dbh;
 	my $query = "select execute_attack(?,?)";
 	my $sth = $dbh->prepare($query);
-	$sth->execute($data->{'defender'},$data->{'attack_id'});
-	
-	return;
+	$sth->execute($data->{'target'},$data->{'attack_id'});
+	my $rs = $sth->fetchrow_hashref;
+
+	return $rs->{'execute_attack'};
 }
 1;

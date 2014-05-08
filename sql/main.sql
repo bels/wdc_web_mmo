@@ -1,7 +1,7 @@
 /*
-dropdb map_loader
-createdb map_loader
-createuser -P map
+dropdb tower_wars
+createdb tower_wars
+createuser -P tower
 PAssword1234!@#$ */
 
 -- Load uuid
@@ -26,7 +26,6 @@ CREATE TABLE tiles(
 );
 CREATE TABLE layer_tiles(lid uuid references layers(id), tiles uuid[] NOT NULL);
 CREATE TABLE orientations(id uuid PRIMARY KEY DEFAULT uuid_generate_v4(), description TEXT);
-CREATE TABLE account (id uuid PRIMARY KEY DEFAULT uuid_generate_v4(), name TEXT NOT NULL, password TEXT NOT NULL, current_timezone smallint, account_created TIMESTAMP DEFAULT now());
 CREATE TABLE avatars (id uuid PRIMARY KEY DEFAULT uuid_generate_v4(), path TEXT NOT NULL, description TEXT);
 
 -- permissions
@@ -37,7 +36,6 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON layer_types TO map;
 GRANT SELECT, INSERT, UPDATE, DELETE ON tiles TO map;
 GRANT SELECT, INSERT, UPDATE, DELETE ON orientations TO map;
 GRANT SELECT, INSERT, UPDATE, DELETE ON layers TO map;
-GRANT SELECT, INSERT, UPDATE, DELETE ON account TO map;
 GRANT SELECT, INSERT, UPDATE, DELETE ON avatars TO map;
 
 -- starting data

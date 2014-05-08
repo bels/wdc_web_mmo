@@ -23,7 +23,10 @@
 			switch(server_message.data.action){
 				case "move":
 					UI.move(server_message.data);
-				case "remove_entity":
+					break;
+				case "destroy":
+					UI.destroy(server_message.data.Entity);
+					Dispatcher.unregister(server_message.data.Entity);
 					break;
 				default:
 					console.log('Could not handle an action from the server');
@@ -40,10 +43,18 @@
 			register: function(data){
 				this.Entities.push(data);
 			},
+			unregister: function(data){\
+				for(var i = 0; i <= this.Entities.length; i++){
+					if(data == window[this.Entities[i]].get_id()){
+						this.Entities.splice(i,1);
+					}
+				}
+			},
 			registerEvent: function(data){
 				this.EventQueue.push(data);
 			},
 			unregisterEvent: function(data){
+				//needs to be fixed. doesn't verify that the event that was completed is the next in the queue
 				this.EventQueue.shift()
 			},
 			executeEvents: function(data){
@@ -223,8 +234,13 @@
 				var distance = Math.sqrt(Math.pow((object2.x - object1.x),2) + Math.pow((object2.y - object2.y),2));
 				return Math.abs(distance);
 			},
-			destroy: function(){
-			
+			destroy: function(data){
+				for(var i = 0; i <= Dispatcher.Entities.length; i++){
+					if(data == window[Dispatcher.Entities[i]].get_id()){
+						var jqO = window[Dispatcher.Entities[i]].get_dom();
+						jqO.remove();
+					}
+				}
 			}
 		};
 
