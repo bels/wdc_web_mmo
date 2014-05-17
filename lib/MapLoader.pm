@@ -78,6 +78,27 @@ sub startup {
 		return $data;
 	});
 	
+	$self->helper(set_location => sub {
+		my ($self,$data) = @_;
+		
+		my $dbh = $self->app->dbh;
+		
+		my $query;
+		if($data->{'type'} eq 'character'){
+			$query = "select set_character_location(?,?,?,?,?)";
+		}
+		if($data->{'type'} eq 'creature'){
+			$query = "select set_creature_location(?,?,?,?,?)";
+		}
+		if($data->{'type'} eq 'npc'){
+			$query = "select set_npc_location(?,?,?,?,?)";
+		}
+		my $sth = $dbh->prepare($query);
+		$sth->execute($data->{'id'},$data->{'x'},$data->{'y'},$data->{'map_id'},$data->{'tile_id'});
+		
+		return;
+	});
+	
 	my $validator = Validator->new();
 	$self->helper(validator => sub {return $validator});
 	# Router

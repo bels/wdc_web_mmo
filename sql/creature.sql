@@ -127,3 +127,35 @@ END;
 $$ LANGUAGE plpgsql;
 
 ---------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION set_creature_location(creature_val uuid, x_val INTEGER, y_val INTEGER, map_id_VAL uuid, tile_id_val INTEGER) RETURNS VOID AS $$
+BEGIN
+	--this should update any existing entry in creature locations or create one if one does not exist.
+	UPDATE creature_location SET 
+		x = x_val,
+		y = y_val,
+		tile_id = tile_id_val
+	WHERE
+		creature_id = creature_val AND "mid" = map_id_val;
+		
+	INSERT INTO creature_location(
+		creature_id,
+		x,
+		y,
+		"mid",
+		tile_id
+	) SELECT
+		creature_val,
+		x_val,
+		y_val,
+		map_id_val,
+		tile_id_val
+	WHERE NOT EXISTS (
+		SELECT 1 FROM creature_location WHERE creature_id = creature_val AND "mid" = map_id_val LIMIT 1
+	);
+	
+	RETURN;
+END;
+$$ LANGUAGE plpgsql;
+
+-----------------------------------------------------------------------------------------
