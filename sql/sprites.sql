@@ -43,7 +43,7 @@ DECLARE
 	sd sprite_data;
 BEGIN
 	FOR counter IN
-		SELECT id FROM sprites
+		SELECT id FROM sprites WHERE path = '/images/sprites.png'
 	LOOP
 		SELECT * INTO sd FROM sprites WHERE id = counter;
 		RETURN NEXT sd;
