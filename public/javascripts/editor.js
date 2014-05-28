@@ -52,6 +52,14 @@ $(document).ready(function(){
 		$(this).css('background-position',current_tile_background_position);
 	});
 	
+	$('.fast_fill_btn').click(function(){
+		$('.tile_spot').each(function(){
+			$(this).attr('tid',current_tile_id);
+			$(this).css('background',current_tile_background);
+			$(this).css('background-position',current_tile_background_position);
+		})
+	});
+
 	$('.save_layer_btn').click(function(){
 		save_layer(active_layer,$(this).prev().find('input').val());
 	});
@@ -99,7 +107,7 @@ $(document).ready(function(){
 	});
 	
 	$('.placement_available_map').click(function(){
-		window.location = '/editor/spawn/' + $(this).find('.placement_map_id').val();
+		window.location = '/e/editor/spawn/' + $(this).find('.placement_map_id').val();
 	});
 	
 	$('.sprite_tile').click(function(){
@@ -132,7 +140,7 @@ function save_layer(layer,name){
 	};
 	
 	$.ajax({
-		url: '/editor/layer/save',
+		url: '/e/editor/layer/save',
 		data: JSON.stringify(o),
 		type: 'POST',
 		dataType: 'json',
@@ -154,7 +162,7 @@ function save_layer(layer,name){
 function submit_map_data(map_layer1,map_layer2,map_layer3,map_layer4,map_layer5,map_layer6,active_map){
 	var form;
 	form = $('<form />', {
-		action: '/editor/map/save',
+		action: '/e/editor/map/save',
 		method: 'POST',
 		style: 'display: none;'
 	});

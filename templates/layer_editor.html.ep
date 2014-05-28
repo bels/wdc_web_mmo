@@ -50,6 +50,7 @@
 						<h5>Current Tile</h5>
 						<img src="" id="current_tile" class="img-thumbnail">
 					</div>
+					<button type="button" class="btn btn-primary fast_fill_btn" title="This will fill the layer with the selected tile">Fast Fill</button>
 					<form class="form-inline" role="form" style="float: right">
 						<div class="form-group">
 						%= text_field 'layer_name', id => 'layer_name', placeholder => 'Name', class => 'form-control layer_name col-sm-3'
